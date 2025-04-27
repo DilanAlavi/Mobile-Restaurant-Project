@@ -1,0 +1,146 @@
+{
+  "project_info": {
+    "project_number": "971211036149",
+    "firebase_url": "https://nowapp-b7b95-default-rtdb.firebaseio.com",
+    "project_id": "nowapp-b7b95",
+    "storage_bucket": "nowapp-b7b95.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:971211036149:android:a10ba5c225e147cbdb3cbc",
+        "android_client_info": {
+          "package_name": "com.calyr.movieapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC9NxEwiODkOzIZ2-xhXkaHkIJo9dh_1yU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "971211036149-c899bqbroueviu16jbrcunlpdid650k2.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.nowmobile.test.beta"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:971211036149:android:9684c8e8facf7517db3cbc",
+        "android_client_info": {
+          "package_name": "com.nowmobile.test.beta"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC9NxEwiODkOzIZ2-xhXkaHkIJo9dh_1yU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "971211036149-c899bqbroueviu16jbrcunlpdid650k2.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.nowmobile.test.beta"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:971211036149:android:6d3ea9c316134e54db3cbc",
+        "android_client_info": {
+          "package_name": "com.ucb.ucbtest"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC9NxEwiODkOzIZ2-xhXkaHkIJo9dh_1yU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "971211036149-c899bqbroueviu16jbrcunlpdid650k2.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.nowmobile.test.beta"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:971211036149:android:5714b679215e8378db3cbc",
+        "android_client_info": {
+          "package_name": "mx.nowmobile.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC9NxEwiODkOzIZ2-xhXkaHkIJo9dh_1yU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "971211036149-c899bqbroueviu16jbrcunlpdid650k2.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.nowmobile.test.beta"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:971211036149:android:895f3043d396d77cdb3cbc",
+        "android_client_info": {
+          "package_name": "mx.nowmobile.app.dev"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC9NxEwiODkOzIZ2-xhXkaHkIJo9dh_1yU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "971211036149-c899bqbroueviu16jbrcunlpdid650k2.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.nowmobile.test.beta"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

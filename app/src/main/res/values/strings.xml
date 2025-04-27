@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">ucbtest</string>
+    <string name="login_title">Iniciar Sesión</string>
+    <string name="home_welcome_text">Bienvenido de nuevo %s!</string>
+    <string name="gitalias_input">Ingrese la cuenta de github</string>
+    <string name="gitalias_btn_find">Buscar</string>
+    <string name="internet_conection_error">No tiene conexión a Internet</string>
+    <string name="btn_take_photo">Tomar foto</string>
+    <string name="movie_list">Movie List</string>
+    <string name="token">fa3e844ce31744388e07fa47c7c5d8c3</string>
+</resources>
