@@ -22,11 +22,10 @@ class RetrofitBuilder(
             .client(client)
             .build()
     }
-    val apiService: IApiService = getRetrofit(BASE_URL).create(IApiService::class.java)
-    val movieService: IMovieApiService = getRetrofit(BASE_URL_MOVIES).create(IMovieApiService::class.java)
+    val mealApiService: IMealApiService = getRetrofit(BASE_URL_MEALS).create(IMealApiService::class.java)
+
 
     companion object {
-        private const val BASE_URL = "https://api.github.com"
-        private const val BASE_URL_MOVIES = "https://api.themoviedb.org"
+        private const val BASE_URL_MEALS = "https://www.themealdb.com"
     }
 }
