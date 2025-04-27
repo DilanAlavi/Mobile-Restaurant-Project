@@ -11,10 +11,31 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 import com.ucb.framework.push.FirebaseNotificationDataSource
+import com.ucb.data.MealRepository
+import com.ucb.framework.meal.MealRemoteDataSource
+import com.ucb.data.meal.IMealRemoteDataSource
+import com.ucb.usecases.GetMealByName
 
 @Module
 @InstallIn(SingletonComponent::class)
 object AppModule {
+    @Provides
+    @Singleton
+    fun provideMealRemoteDataSource(retrofitBuilder: RetrofitBuilder): IMealRemoteDataSource {
+        return MealRemoteDataSource(retrofitBuilder)
+    }
+
+    @Provides
+    @Singleton
+    fun provideMealRepository(dataSource: IMealRemoteDataSource): MealRepository {
+        return MealRepository(dataSource)
+    }
+
+    @Provides
+    @Singleton
+    fun provideGetMealByName(mealRepository: MealRepository): GetMealByName {
+        return GetMealByName(mealRepository)
+    }
 
     @Provides
     @Singleton
