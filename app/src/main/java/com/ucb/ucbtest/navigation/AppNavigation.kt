@@ -8,13 +8,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.ucb.domain.Movie
-import com.ucb.ucbtest.counter.CounterUI
-import com.ucb.ucbtest.gitalias.GitaliasUI
-import com.ucb.ucbtest.login.LoginUI
-import com.ucb.ucbtest.movie.MoviesUI
-import com.ucb.ucbtest.moviedetail.MovieDetailUI
-import com.ucb.ucbtest.takephoto.TakePhotoUI
+import com.ucb.ucbtest.meal.MealUI
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import java.net.URLDecoder
@@ -26,67 +20,16 @@ fun AppNavigation() {
 
     NavHost(
         navController = navController,
-        startDestination = Screen.LoginScreen.route,
+        startDestination = Screen.MealScreen.route,
         enterTransition = { EnterTransition.None },
         exitTransition = { ExitTransition.None },
         popEnterTransition = { EnterTransition.None },
         popExitTransition = { ExitTransition.None }
-
     ) {
-        composable(Screen.MenuScreen.route) {
-            LoginUI(
-                onSuccess = {
-                    navController.navigate(Screen.GitaliasScreen.route)
-                }
+        composable(Screen.MealScreen.route) {
+            MealUI(
+                onDetailsClick = { /* Acción para ver detalles */ }
             )
         }
-
-        composable(Screen.GitaliasScreen.route) {
-            GitaliasUI()
-        }
-
-        composable(Screen.TakePhotoScreen.route) {
-            TakePhotoUI()
-        }
-
-        composable(Screen.LoginScreen.route) {
-            LoginUI(
-                onSuccess = {
-                    navController.navigate(Screen.GitaliasScreen.route)
-                }
-            )
-        }
-
-        composable(Screen.MoviesScreen.route) {
-
-            MoviesUI( onSuccess = {
-                movie ->
-                    val movieJson = Json.encodeToString(movie)
-                    val encodeMovieJson = URLEncoder.encode(movieJson, "UTF-8")
-                    navController.navigate("${Screen.MovieDetailScreen.route}/$encodeMovieJson")
-            })
-        }
-
-        composable(
-            route = "${Screen.MovieDetailScreen.route}/{movie}",
-            arguments = listOf(
-                navArgument("movie") {
-                    type = NavType.StringType
-                }
-            )
-        ) {
-            val movieJson = it.arguments?.getString("movie") ?: ""
-            val movieDecoded = URLDecoder.decode(movieJson, "UTF-8")
-            val movie = Json.decodeFromString<Movie>(movieDecoded)
-
-            MovieDetailUI( movie = movie, onBackPressed = { navController.popBackStack() })
-        }
-
-        composable(Screen.CounterScreen.route) {
-            CounterUI()
-        }
-
     }
-
-
 }
