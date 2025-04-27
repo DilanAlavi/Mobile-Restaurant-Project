@@ -3,6 +3,8 @@ package com.ucb.ucbtest.meal
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -15,13 +17,17 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import coil.compose.AsyncImage
+import com.ucb.ucbtest.navigation.Screen
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MealUI(
     viewModel: MealViewModel = hiltViewModel(),
+    navController: NavController,
     onDetailsClick: () -> Unit = {}
+
 ) {
     // Definición de colores basados en la imagen compartida
     val darkRed = Color(0xFFA01111)
@@ -59,6 +65,16 @@ fun MealUI(
                         )
                     }
                 },
+                navigationIcon = { // 👈 Aquí agregamos el botón hamburguesa
+                    IconButton(onClick = { navController.navigate(Screen.SettingsScreen.route) }) {  // Navegar a SettingsScreen
+                        Icon(
+                            imageVector = Icons.Default.Menu,
+                            contentDescription = "Settings",
+                            tint = Color(0xFF6B3E3E) // color del icono
+                        )
+                    }
+                },
+
                 actions = {
                     Button(
                         onClick = { /* Book seat action */ },
