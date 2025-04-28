@@ -5,5 +5,5 @@ import com.ucb.domain.CategoryMeal
 
 
 interface ICategoryMealRemoteDataSource {
-    suspend fun getAllCategories(): NetworkResult<CategoryMeal>
+    suspend fun getAllCategories(): NetworkResult<List<CategoryMeal>>
 }
