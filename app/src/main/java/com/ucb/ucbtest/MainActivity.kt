@@ -24,9 +24,6 @@ class MainActivity : ComponentActivity() {
             ) { innerPadding ->
                 AppNavigation(navController, innerPadding)
             }
-
         }
     }
 }
-
-

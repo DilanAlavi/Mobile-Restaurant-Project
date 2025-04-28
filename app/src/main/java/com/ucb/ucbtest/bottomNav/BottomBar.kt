@@ -13,6 +13,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
+import com.ucb.ucbtest.navigation.Screen
 
 @Composable
 fun BottomBar(navController: NavController) {
@@ -34,12 +35,16 @@ fun BottomBar(navController: NavController) {
                 selected = currentRoute == item.route,
                 onClick = {
                     if (currentRoute != item.route) {
-                        navController.navigate(item.route) {
-                            popUpTo(navController.graph.startDestinationId) {
-                                saveState = true
+                        if (item.route == BottomNavItem.HOME.route) {
+                            navController.popBackStack(Screen.MealScreen.route, false) 
+                        } else {
+                            navController.navigate(item.route) {
+                                popUpTo(navController.graph.startDestinationId) {
+                                    saveState = true
+                                }
+                                launchSingleTop = true
+                                restoreState = true
                             }
-                            launchSingleTop = true
-                            restoreState = true
                         }
                     }
                 },
@@ -57,4 +62,3 @@ fun BottomBar(navController: NavController) {
         }
     }
 }
-

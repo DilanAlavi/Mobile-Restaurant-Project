@@ -1,4 +1,5 @@
 package com.ucb.domain
+import java.io.Serializable
 
 data class Meal(
     val idMeal: String,
@@ -8,4 +9,4 @@ data class Meal(
     val strInstructions: String,
     val strMealThumb: String,
     val price: Double = 50.0 //Esto esta hardcoeado
-)
+) : Serializable

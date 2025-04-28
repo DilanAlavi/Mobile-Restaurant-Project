@@ -12,8 +12,7 @@ fun NavGraph(navController: NavHostController) {
     NavHost(navController, startDestination = BottomNavItem.HOME.route) {
         composable(BottomNavItem.HOME.route) {
             MealUI(
-                navController = navController,
-                onDetailsClick = { /* Acción al hacer clic en un elemento de comida */ }
+                navController = navController
             )
         }
         composable(BottomNavItem.SEARCH.route) {
