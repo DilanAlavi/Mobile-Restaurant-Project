@@ -24,7 +24,7 @@ class RetrofitBuilder(
     }
     val mealApiService: IMealApiService = getRetrofit(BASE_URL_MEALS).create(IMealApiService::class.java)
     val categoryMealApiService: ICategoryMealApiService = getRetrofit(BASE_URL_MEALS).create(ICategoryMealApiService::class.java)
-
+    val topPickApiService: ITopPickApiService = getRetrofit(BASE_URL_MEALS).create(ITopPickApiService::class.java)
 
     companion object {
         private const val BASE_URL_MEALS = "https://www.themealdb.com"
