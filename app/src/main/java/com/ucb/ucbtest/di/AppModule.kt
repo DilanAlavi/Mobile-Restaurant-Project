@@ -1,5 +1,4 @@
 package com.ucb.ucbtest.di
-
 import android.content.Context
 import com.ucb.data.CategoryMealRepository
 import com.ucb.data.PushNotificationRepository
@@ -13,12 +12,16 @@ import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 import com.ucb.framework.push.FirebaseNotificationDataSource
 import com.ucb.data.MealRepository
+import com.ucb.data.TopPickRepository
 import com.ucb.data.meal.ICategoryMealRemoteDataSource
-import com.ucb.framework.meal.MealRemoteDataSource
 import com.ucb.data.meal.IMealRemoteDataSource
+import com.ucb.data.meal.ITopPickRemoteDataSource
 import com.ucb.framework.categoryMeal.CategoryMealRemoteDataSource
+import com.ucb.framework.meal.MealRemoteDataSource
+import com.ucb.framework.topPick.TopPickRemoteDataSource
 import com.ucb.usecases.GetCategoriesMeal
 import com.ucb.usecases.GetMealByName
+import com.ucb.usecases.GetTopPicks
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -41,7 +44,6 @@ object AppModule {
         return GetMealByName(mealRepository)
     }
 
-////////
     @Provides
     @Singleton
     fun provideCategoryMealRemoteDataSource(retrofitBuilder: RetrofitBuilder): ICategoryMealRemoteDataSource {
@@ -60,6 +62,25 @@ object AppModule {
         return GetCategoriesMeal(categoryMealRepository)
     }
 
+    // TopPick dependencies
+    @Provides
+    @Singleton
+    fun provideTopPickRemoteDataSource(retrofitBuilder: RetrofitBuilder): ITopPickRemoteDataSource {
+        return TopPickRemoteDataSource(retrofitBuilder)
+    }
+
+    @Provides
+    @Singleton
+    fun provideTopPickRepository(dataSource: ITopPickRemoteDataSource): TopPickRepository {
+        return TopPickRepository(dataSource)
+    }
+
+    @Provides
+    @Singleton
+    fun provideGetTopPicks(topPickRepository: TopPickRepository): GetTopPicks {
+        return GetTopPicks(topPickRepository)
+    }
+
     @Provides
     @Singleton
     fun providerRetrofitBuilder(@ApplicationContext context: Context) : RetrofitBuilder {
@@ -68,7 +89,7 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun providePushNotificationRepository( pushDataSource: IPushDataSource): PushNotificationRepository {
+    fun providePushNotificationRepository(pushDataSource: IPushDataSource): PushNotificationRepository {
         return PushNotificationRepository(pushDataSource)
     }
 

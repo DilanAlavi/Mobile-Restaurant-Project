@@ -5,22 +5,29 @@ import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
 data class TopPickResponseDto(
-    @Json(name = "topPicks")
-    val topPicks: List<TopPickDto>?
+    @Json(name = "meals")
+    val meals: List<TopPickDto>?
 )
 
 @JsonClass(generateAdapter = true)
 data class TopPickDto(
     @Json(name = "idMeal")
     val idMeal: String,
+
     @Json(name = "strMeal")
     val strMeal: String,
+
     @Json(name = "strMealThumb")
     val strMealThumb: String,
-    @Json(name = "originalPrice")
-    val originalPrice: Double,
-    @Json(name = "discountPrice")
-    val discountPrice: Double,
-    @Json(name = "discountPercentage")
-    val discountPercentage: Int
+
+    // Estos campos no vienen de la API, pero los necesitamos para nuestro modelo
+    // Los calcularemos a partir de otros datos
+    @Transient
+    val originalPrice: Double = 1000.0, // Valor predeterminado
+
+    @Transient
+    val discountPrice: Double = 500.0, // Valor predeterminado
+
+    @Transient
+    val discountPercentage: Int = 50 // Valor predeterminado
 )
