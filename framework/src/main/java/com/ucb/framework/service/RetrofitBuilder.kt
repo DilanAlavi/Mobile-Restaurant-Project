@@ -23,6 +23,7 @@ class RetrofitBuilder(
             .build()
     }
     val mealApiService: IMealApiService = getRetrofit(BASE_URL_MEALS).create(IMealApiService::class.java)
+    val categoryMealApiService: ICategoryMealApiService = getRetrofit(BASE_URL_MEALS).create(ICategoryMealApiService::class.java)
 
 
     companion object {
