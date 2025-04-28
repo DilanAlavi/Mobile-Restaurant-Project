@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
+import com.ucb.domain.Meal
 import com.ucb.ucbtest.categorymeal.CategoryMealComponent
 import com.ucb.ucbtest.navigation.Screen
 import com.ucb.ucbtest.toppick.TopPickComponent
@@ -29,20 +30,17 @@ import com.ucb.ucbtest.toppick.TopPickComponent
 fun MealUI(
     viewModel: MealViewModel = hiltViewModel(),
     navController: NavController,
-    onDetailsClick: () -> Unit = {}
+    onDetailsClick: (Meal) -> Unit = {}
 ) {
-    // Definición de colores basados en la imagen compartida
     val darkRed = Color(0xFFA01111)
     val red = Color(0xFFC71818)
     val lightRed = Color(0xFFBD6060)
     val lightPink = Color(0xFFF7E9E9)
     val gray = Color(0xFF8E8A8A)
 
-    // Estado de scroll para permitir el desplazamiento vertical
     val scrollState = rememberScrollState()
 
     LaunchedEffect(Unit) {
-        // Al cargar la pantalla, buscar "Arrabiata" como mencionaste
         viewModel.getMeal("Arrabiata")
     }
 
@@ -98,14 +96,12 @@ fun MealUI(
             )
         }
     ) { padding ->
-        // Columna principal con scroll vertical
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
                 .verticalScroll(scrollState)
         ) {
-            // Sección de plato destacado
             when (val currentState = state) {
                 is MealViewModel.MealState.Loading -> {
                     Box(
@@ -121,13 +117,11 @@ fun MealUI(
                 is MealViewModel.MealState.Success -> {
                     val meal = currentState.meal
 
-                    // Destacado del día (layout similar a la imagen)
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(16.dp)
                     ) {
-                        // Imagen del plato
                         AsyncImage(
                             model = meal.strMealThumb,
                             contentDescription = meal.strMeal,
@@ -140,7 +134,6 @@ fun MealUI(
 
                         Spacer(modifier = Modifier.width(16.dp))
 
-                        // Información del plato
                         Column(
                             modifier = Modifier.weight(1f)
                         ) {
@@ -153,7 +146,7 @@ fun MealUI(
                             )
 
                             Text(
-                                text = "Rollo de Carne",
+                                text = "Spicy Arrabiata Penne",
                                 color = Color(0xFF6B3E3E),
                                 fontSize = 20.sp,
                                 fontWeight = FontWeight.Medium,
@@ -187,7 +180,7 @@ fun MealUI(
                             Spacer(modifier = Modifier.height(16.dp))
 
                             Button(
-                                onClick = onDetailsClick,
+                                onClick = { onDetailsClick(meal) },
                                 shape = RoundedCornerShape(16.dp),
                                 colors = ButtonDefaults.buttonColors(
                                     containerColor = red,
@@ -214,7 +207,6 @@ fun MealUI(
                     }
                 }
                 else -> {
-                    // Estado inicial
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -227,7 +219,6 @@ fun MealUI(
                 }
             }
 
-            // Sección Top Picks
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -240,17 +231,13 @@ fun MealUI(
                     modifier = Modifier.padding(start = 16.dp, bottom = 8.dp)
                 )
 
-                // Componente de TopPick sin título propio
                 TopPickComponent(
                     showTitle = false,
-                    onTopPickClick = { mealId ->
-                        // Acción al hacer clic en un top pick
-                    },
+                    onTopPickClick = { mealId -> },
                     modifier = Modifier.fillMaxWidth()
                 )
             }
 
-            // Sección de categorías
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -264,16 +251,13 @@ fun MealUI(
                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
                 )
 
-                // Componente de categorías con altura fija
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(240.dp)
                 ) {
                     CategoryMealComponent(
-                        onCategoryClick = { categoryName ->
-                            // Acción al hacer clic en una categoría
-                        },
+                        onCategoryClick = { categoryName -> },
                         showTitle = false,
                         columns = 2,
                         modifier = Modifier.fillMaxSize()
