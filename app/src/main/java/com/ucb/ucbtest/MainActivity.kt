@@ -4,6 +4,9 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.material3.Scaffold
+import androidx.navigation.compose.rememberNavController
+import com.ucb.ucbtest.bottomNav.BottomBar
 import com.ucb.ucbtest.navigation.AppNavigation
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -14,8 +17,16 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            AppNavigation()
+            val navController = rememberNavController()
+
+            Scaffold(
+                bottomBar = { BottomBar(navController) }
+            ) { innerPadding ->
+                AppNavigation(navController, innerPadding)
+            }
+
         }
     }
 }
+
 
