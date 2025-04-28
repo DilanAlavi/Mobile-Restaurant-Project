@@ -19,6 +19,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
+import com.ucb.ucbtest.categorymeal.CategoryMealComponent
 import com.ucb.ucbtest.navigation.Screen
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -27,7 +28,6 @@ fun MealUI(
     viewModel: MealViewModel = hiltViewModel(),
     navController: NavController,
     onDetailsClick: () -> Unit = {}
-
 ) {
     // Definición de colores basados en la imagen compartida
     val darkRed = Color(0xFFA01111)
@@ -74,7 +74,6 @@ fun MealUI(
                         )
                     }
                 },
-
                 actions = {
                     Button(
                         onClick = { /* Book seat action */ },
@@ -94,123 +93,161 @@ fun MealUI(
             )
         }
     ) { padding ->
-        Box(
+        // Usamos una Column simple sin scroll
+        Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
-                .padding(16.dp)
         ) {
-            when (val currentState = state) {
-                is MealViewModel.MealState.Loading -> {
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        CircularProgressIndicator(color = red)
-                    }
-                }
-                is MealViewModel.MealState.Success -> {
-                    val meal = currentState.meal
-
-                    // Destacado del día
-                    Column(modifier = Modifier.fillMaxWidth()) {
-                        Text(
-                            text = "Lo Más Destacado De Hoy",
-                            color = red,
-                            fontSize = 24.sp,
-                            fontWeight = FontWeight.Bold,
-                            modifier = Modifier.padding(bottom = 4.dp)
-                        )
-
-                        Text(
-                            text = meal.strMeal,
-                            color = Color(0xFF6B3E3E),
-                            fontSize = 20.sp,
-                            fontWeight = FontWeight.Medium,
-                            modifier = Modifier.padding(bottom = 16.dp)
-                        )
-
-                        Row(
-                            modifier = Modifier.fillMaxWidth()
+            // Sección de plato destacado - similar a como lo tenías
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+            ) {
+                when (val currentState = state) {
+                    is MealViewModel.MealState.Loading -> {
+                        Box(
+                            modifier = Modifier.fillMaxSize(),
+                            contentAlignment = Alignment.Center
                         ) {
-                            // Imagen del plato
-                            AsyncImage(
-                                model = meal.strMealThumb,
-                                contentDescription = meal.strMeal,
-                                contentScale = ContentScale.Crop,
-                                modifier = Modifier
-                                    .size(150.dp)
-                                    .clip(RoundedCornerShape(8.dp))
+                            CircularProgressIndicator(color = red)
+                        }
+                    }
+                    is MealViewModel.MealState.Success -> {
+                        val meal = currentState.meal
+
+                        // Destacado del día
+                        Column(modifier = Modifier.fillMaxWidth()) {
+                            Text(
+                                text = "Lo Más Destacado De Hoy",
+                                color = red,
+                                fontSize = 24.sp,
+                                fontWeight = FontWeight.Bold,
+                                modifier = Modifier.padding(bottom = 4.dp)
                             )
 
-                            Spacer(modifier = Modifier.width(16.dp))
+                            Text(
+                                text = meal.strMeal,
+                                color = Color(0xFF6B3E3E),
+                                fontSize = 20.sp,
+                                fontWeight = FontWeight.Medium,
+                                modifier = Modifier.padding(bottom = 16.dp)
+                            )
 
-                            // Información de precio
-                            Column {
-                                Row(
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    Text(
-                                        text = "Bs. ${meal.price.toInt()}",
-                                        color = red,
-                                        fontSize = 24.sp,
-                                        fontWeight = FontWeight.Bold
-                                    )
-                                }
+                            Row(
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                // Imagen del plato
+                                AsyncImage(
+                                    model = meal.strMealThumb,
+                                    contentDescription = meal.strMeal,
+                                    contentScale = ContentScale.Crop,
+                                    modifier = Modifier
+                                        .size(150.dp)
+                                        .clip(RoundedCornerShape(8.dp))
+                                )
 
-                                Row(
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    Text(
-                                        text = "Bs. 1000",
-                                        color = gray,
-                                        fontSize = 14.sp,
-                                        textDecoration = TextDecoration.LineThrough
-                                    )
-                                    Spacer(modifier = Modifier.width(8.dp))
-                                    Text(
-                                        text = "Ahorra el 50%",
-                                        color = gray,
-                                        fontSize = 14.sp
-                                    )
-                                }
+                                Spacer(modifier = Modifier.width(16.dp))
 
-                                Spacer(modifier = Modifier.height(16.dp))
+                                // Información de precio
+                                Column {
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Text(
+                                            text = "Bs. ${meal.price.toInt()}",
+                                            color = red,
+                                            fontSize = 24.sp,
+                                            fontWeight = FontWeight.Bold
+                                        )
+                                    }
 
-                                Button(
-                                    onClick = onDetailsClick,
-                                    shape = RoundedCornerShape(16.dp),
-                                    colors = ButtonDefaults.buttonColors(
-                                        containerColor = red,
-                                        contentColor = Color.White
-                                    )
-                                ) {
-                                    Text("Ver Detalles")
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Text(
+                                            text = "Bs. 1000",
+                                            color = gray,
+                                            fontSize = 14.sp,
+                                            textDecoration = TextDecoration.LineThrough
+                                        )
+                                        Spacer(modifier = Modifier.width(8.dp))
+                                        Text(
+                                            text = "Ahorra el 50%",
+                                            color = gray,
+                                            fontSize = 14.sp
+                                        )
+                                    }
+
+                                    Spacer(modifier = Modifier.height(16.dp))
+
+                                    Button(
+                                        onClick = onDetailsClick,
+                                        shape = RoundedCornerShape(16.dp),
+                                        colors = ButtonDefaults.buttonColors(
+                                            containerColor = red,
+                                            contentColor = Color.White
+                                        )
+                                    ) {
+                                        Text("Ver Detalles")
+                                    }
                                 }
                             }
                         }
                     }
-                }
-                is MealViewModel.MealState.Error -> {
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = "Error: ${currentState.message}",
-                            color = MaterialTheme.colorScheme.error
-                        )
+                    is MealViewModel.MealState.Error -> {
+                        Box(
+                            modifier = Modifier.fillMaxSize(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = "Error: ${currentState.message}",
+                                color = MaterialTheme.colorScheme.error
+                            )
+                        }
+                    }
+                    else -> {
+                        // Estado inicial
+                        Box(
+                            modifier = Modifier.fillMaxSize(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text("Cargando información...")
+                        }
                     }
                 }
-                else -> {
-                    // Estado inicial
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text("Cargando información...")
-                    }
-                }
+            }
+
+            // Sección de categorías con título
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
+            ) {
+                Text(
+                    text = "Categorías",
+                    color = darkRed,
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(vertical = 16.dp)
+                )
+            }
+
+            // Componente de categorías con altura fija para evitar problemas de scroll anidado
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(270.dp) // Altura fija para el grid
+            ) {
+                CategoryMealComponent(
+                    onCategoryClick = { categoryName ->
+                        // Acción al hacer clic en una categoría
+                    },
+                    showTitle = false, // No mostramos el título del componente
+                    columns = 2,
+                    modifier = Modifier.fillMaxSize()
+                )
             }
         }
     }
