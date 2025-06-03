@@ -12,4 +12,7 @@ class MealRepository(
     suspend fun searchMealsByName(name: String): NetworkResult<List<Meal>> {
         return remoteDataSource.searchMealsByName(name)
     }
+    suspend fun getMealById(id: String): NetworkResult<Meal> {
+        return remoteDataSource.getMealById(id)
+    }
 }
