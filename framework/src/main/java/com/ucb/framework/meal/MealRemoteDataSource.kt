@@ -38,4 +38,17 @@ class MealRemoteDataSource(
             NetworkResult.Error(response.message())
         }
     }
+    override suspend fun getMealById(id: String): NetworkResult<Meal> {
+        val response = retrofitBuilder.mealApiService.getMealById(id)
+        return if (response.isSuccessful) {
+            val mealDto = response.body()?.meals?.firstOrNull()
+            if (mealDto != null) {
+                NetworkResult.Success(mealDto.toModel()) // Usa 50.0 Bs por defecto
+            } else {
+                NetworkResult.Error("No se encontró el plato solicitado")
+            }
+        } else {
+            NetworkResult.Error(response.message())
+        }
+    }
 }
