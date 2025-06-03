@@ -24,4 +24,18 @@ class MealRemoteDataSource(
             NetworkResult.Error(response.message())
         }
     }
+    override suspend fun searchMealsByName(name: String): NetworkResult<List<Meal>> {
+        val response = retrofitBuilder.mealApiService.searchMealsByName(name)
+        return if (response.isSuccessful) {
+            val mealsDto = response.body()?.meals
+            if (!mealsDto.isNullOrEmpty()) {
+                val meals = mealsDto.map { it.toModel() }
+                NetworkResult.Success(meals)
+            } else {
+                NetworkResult.Error("No se encontraron platos con ese nombre")
+            }
+        } else {
+            NetworkResult.Error(response.message())
+        }
+    }
 }
