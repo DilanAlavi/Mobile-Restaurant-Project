@@ -10,4 +10,6 @@ interface IMealApiService {
     suspend fun searchMealByName(@Query("s") mealName: String): Response<MealResponseDto>
     @GET("/api/json/v1/1/search.php")
     suspend fun searchMealsByName(@Query("s") mealName: String): Response<MealResponseDto>
+    @GET("/api/json/v1/1/lookup.php")
+    suspend fun getMealById(@Query("i") mealId: String): Response<MealResponseDto>
 }
