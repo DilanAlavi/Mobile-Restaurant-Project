@@ -16,6 +16,7 @@ import com.google.gson.Gson
 import com.ucb.domain.Meal
 import com.ucb.ucbtest.meal.MealDetailScreen
 import com.ucb.ucbtest.meal.MealUI
+import com.ucb.ucbtest.search.SearchScreen
 import com.ucb.ucbtest.settings.SettingsScreen
 
 @Composable
@@ -32,6 +33,7 @@ fun AppNavigation(
         popEnterTransition = { EnterTransition.None },
         popExitTransition = { ExitTransition.None }
     ) {
+        // Pantalla principal (Home/Meal)
         composable(Screen.MealScreen.route) {
             MealUI(
                 navController = navController,
@@ -41,9 +43,23 @@ fun AppNavigation(
                 }
             )
         }
+
+        // Pantalla de configuraciones
         composable(Screen.SettingsScreen.route) {
             SettingsScreen(navController = navController)
         }
+
+        // NUEVA: Pantalla de búsqueda
+        composable("search") {
+            SearchScreen(
+                onMealClick = { meal ->
+                    val mealJson = Uri.encode(Gson().toJson(meal))
+                    navController.navigate(Screen.MealDetailScreen.createRoute(mealJson))
+                }
+            )
+        }
+
+        // Pantalla de detalles del plato
         composable(
             route = Screen.MealDetailScreen.route,
             arguments = listOf(navArgument("meal") { type = NavType.StringType })

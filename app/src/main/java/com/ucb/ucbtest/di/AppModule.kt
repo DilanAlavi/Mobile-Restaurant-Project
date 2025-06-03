@@ -22,7 +22,7 @@ import com.ucb.framework.topPick.TopPickRemoteDataSource
 import com.ucb.usecases.GetCategoriesMeal
 import com.ucb.usecases.GetMealByName
 import com.ucb.usecases.GetTopPicks
-
+import com.ucb.usecases.SearchMealsByName
 @Module
 @InstallIn(SingletonComponent::class)
 object AppModule {
@@ -30,6 +30,11 @@ object AppModule {
     @Singleton
     fun provideMealRemoteDataSource(retrofitBuilder: RetrofitBuilder): IMealRemoteDataSource {
         return MealRemoteDataSource(retrofitBuilder)
+    }
+    @Provides
+    @Singleton
+    fun provideSearchMealsByName(mealRepository: MealRepository): SearchMealsByName {
+        return SearchMealsByName(mealRepository)
     }
 
     @Provides
