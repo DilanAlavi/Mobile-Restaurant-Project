@@ -23,6 +23,7 @@ import com.ucb.usecases.GetCategoriesMeal
 import com.ucb.usecases.GetMealByName
 import com.ucb.usecases.GetTopPicks
 import com.ucb.usecases.SearchMealsByName
+import com.ucb.usecases.GetMealById
 @Module
 @InstallIn(SingletonComponent::class)
 object AppModule {
@@ -35,6 +36,11 @@ object AppModule {
     @Singleton
     fun provideSearchMealsByName(mealRepository: MealRepository): SearchMealsByName {
         return SearchMealsByName(mealRepository)
+    }
+    @Provides
+    @Singleton
+    fun provideGetMealById(mealRepository: MealRepository): GetMealById {
+        return GetMealById(mealRepository)
     }
 
     @Provides
