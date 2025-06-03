@@ -23,6 +23,7 @@ import coil.compose.AsyncImage
 import com.ucb.domain.Meal
 import com.ucb.ucbtest.categorymeal.CategoryMealComponent
 import com.ucb.ucbtest.navigation.Screen
+import com.ucb.ucbtest.shared.MealClickHandler
 import com.ucb.ucbtest.toppick.TopPickComponent
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -32,6 +33,9 @@ fun MealUI(
     navController: NavController,
     onDetailsClick: (Meal) -> Unit = {}
 ) {
+    // ARREGLADO: Obtener MealClickHandler aquí en el contexto @Composable correcto
+    val mealClickHandler: MealClickHandler = hiltViewModel()
+
     val darkRed = Color(0xFFA01111)
     val red = Color(0xFFC71818)
     val lightRed = Color(0xFFBD6060)
@@ -231,9 +235,15 @@ fun MealUI(
                     modifier = Modifier.padding(start = 16.dp, bottom = 8.dp)
                 )
 
+                // ARREGLADO: TopPickComponent con MealClickHandler correcto
                 TopPickComponent(
                     showTitle = false,
-                    onTopPickClick = { mealId -> },
+                    onTopPickClick = { topPick ->
+                        mealClickHandler.handleTopPickClick(
+                            topPick = topPick,
+                            onMealFound = onDetailsClick
+                        )
+                    },
                     modifier = Modifier.fillMaxWidth()
                 )
             }

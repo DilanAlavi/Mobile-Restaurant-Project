@@ -1,3 +1,4 @@
+// CREAR: app/src/main/java/com/ucb/ucbtest/shared/MealClickHandler.kt
 package com.ucb.ucbtest.shared
 
 import androidx.lifecycle.ViewModel

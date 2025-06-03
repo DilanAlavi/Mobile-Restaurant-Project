@@ -1,3 +1,4 @@
+// app/src/main/java/com/ucb/ucbtest/toppick/TopPickUI.kt
 package com.ucb.ucbtest.toppick
 
 import androidx.compose.foundation.clickable
@@ -28,12 +29,13 @@ import com.ucb.domain.TopPick
 @Composable
 fun TopPickComponent(
     viewModel: TopPickViewModel = hiltViewModel(),
-    onTopPickClick: (TopPick) -> Unit = {}, // CAMBIÓ: ahora pasa TopPick completo
+    onTopPickClick: (TopPick) -> Unit = {}, // CAMBIADO: Ahora recibe TopPick completo
     showTitle: Boolean = true,
     modifier: Modifier = Modifier
 ) {
     val red = Color(0xFFC71818)
     val darkRed = Color(0xFFA01111)
+    val lightPink = Color(0xFFF7E9E9)
 
     LaunchedEffect(Unit) {
         viewModel.getTopPicks()
@@ -74,7 +76,7 @@ fun TopPickComponent(
                     items(topPicks) { topPick ->
                         TopPickCard(
                             topPick = topPick,
-                            onClick = { onTopPickClick(topPick) } // CAMBIÓ: pasa TopPick completo
+                            onClick = { onTopPickClick(topPick) } // ARREGLADO: Pasa TopPick completo
                         )
                     }
                 }
@@ -113,7 +115,7 @@ fun TopPickComponent(
 @Composable
 fun TopPickCard(
     topPick: TopPick,
-    onClick: () -> Unit
+    onClick: () -> Unit // ARREGLADO: onClick normal, no @Composable
 ) {
     val red = Color(0xFFC71818)
     val gray = Color(0xFF8E8A8A)
@@ -127,7 +129,7 @@ fun TopPickCard(
         modifier = Modifier
             .width(180.dp)
             .height(220.dp)
-            .clickable(onClick = onClick)
+            .clickable(onClick = onClick) // ARREGLADO: clickable correcto
     ) {
         // Contenido dentro de la tarjeta
         Column(
