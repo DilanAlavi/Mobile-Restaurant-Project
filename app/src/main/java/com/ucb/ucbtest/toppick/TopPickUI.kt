@@ -28,13 +28,12 @@ import com.ucb.domain.TopPick
 @Composable
 fun TopPickComponent(
     viewModel: TopPickViewModel = hiltViewModel(),
-    onTopPickClick: (String) -> Unit = {},
+    onTopPickClick: (TopPick) -> Unit = {}, // CAMBIÓ: ahora pasa TopPick completo
     showTitle: Boolean = true,
     modifier: Modifier = Modifier
 ) {
     val red = Color(0xFFC71818)
     val darkRed = Color(0xFFA01111)
-    val lightPink = Color(0xFFF7E9E9)
 
     LaunchedEffect(Unit) {
         viewModel.getTopPicks()
@@ -75,7 +74,7 @@ fun TopPickComponent(
                     items(topPicks) { topPick ->
                         TopPickCard(
                             topPick = topPick,
-                            onClick = { onTopPickClick(topPick.idMeal) }
+                            onClick = { onTopPickClick(topPick) } // CAMBIÓ: pasa TopPick completo
                         )
                     }
                 }
