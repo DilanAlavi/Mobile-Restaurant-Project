@@ -1,5 +1,6 @@
 package com.ucb.ucbtest.di
 import android.content.Context
+import com.google.firebase.auth.FirebaseAuth
 import com.ucb.data.CategoryMealRepository
 import com.ucb.data.PushNotificationRepository
 import com.ucb.data.push.IPushDataSource
@@ -23,6 +24,13 @@ import com.ucb.usecases.GetCategoriesMeal
 import com.ucb.usecases.GetMealByName
 import com.ucb.usecases.GetTopPicks
 
+
+import com.ucb.data.repository.AuthRepository
+import com.ucb.framework.repository.AuthRepositoryImpl
+import com.ucb.usecases.auth.CheckAuthStateUseCase
+import com.ucb.usecases.auth.GetCurrentUserUseCase
+import com.ucb.usecases.auth.SignInWithGoogleUseCase
+import com.ucb.usecases.auth.SignOutUseCase
 @Module
 @InstallIn(SingletonComponent::class)
 object AppModule {
@@ -98,4 +106,42 @@ object AppModule {
     fun provideIPushDataSource(): IPushDataSource {
         return FirebaseNotificationDataSource()
     }
+
+    @Provides
+    @Singleton
+    fun provideFirebaseAuth(): FirebaseAuth {
+        return FirebaseAuth.getInstance()
+    }
+
+    @Provides
+    @Singleton
+    fun provideAuthRepository(firebaseAuth: FirebaseAuth): AuthRepository {
+        return AuthRepositoryImpl(firebaseAuth)
+    }
+
+    @Provides
+    @Singleton
+    fun provideSignInWithGoogleUseCase(authRepository: AuthRepository): SignInWithGoogleUseCase {
+        return SignInWithGoogleUseCase(authRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideSignOutUseCase(authRepository: AuthRepository): SignOutUseCase {
+        return SignOutUseCase(authRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideGetCurrentUserUseCase(authRepository: AuthRepository): GetCurrentUserUseCase {
+        return GetCurrentUserUseCase(authRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideCheckAuthStateUseCase(authRepository: AuthRepository): CheckAuthStateUseCase {
+        return CheckAuthStateUseCase(authRepository)
+    }
+
+
 }

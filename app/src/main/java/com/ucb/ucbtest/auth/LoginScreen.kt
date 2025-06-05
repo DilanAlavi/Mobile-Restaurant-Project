@@ -1,5 +1,8 @@
 package com.ucb.ucbtest.auth
 
+import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -11,23 +14,109 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.common.api.ApiException
+import com.ucb.ucbtest.R
+import com.ucb.ucbtest.auth.AuthState
+import com.ucb.ucbtest.auth.AuthViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginScreen(
     navController: NavController,
-    onLoginSuccess: () -> Unit
+    onLoginSuccess: () -> Unit,
+    viewModel: AuthViewModel = hiltViewModel()
 ) {
     val redColor = Color(0xFFB71C1C)
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var rememberMe by remember { mutableStateOf(false) }
+
+    val context = LocalContext.current
+    val authState by viewModel.authState.collectAsStateWithLifecycle()
+
+    // ✅ Variables derivadas para evitar smart cast issues
+    val isLoading = authState is AuthState.Loading
+    val isEnabled = !isLoading
+
+    // Configurar Google Sign-In
+    val gso = remember {
+        GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+            .requestIdToken(context.getString(R.string.web_client_id))
+            .requestEmail()
+            .build()
+    }
+
+    val googleSignInClient = remember { GoogleSignIn.getClient(context, gso) }
+
+
+
+    // Agregar logs para debug
+    val googleSignInLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        println("🔍 Result code: ${result.resultCode}")
+        println("🔍 Result data: ${result.data}")
+
+        val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
+        try {
+            val account = task.getResult(ApiException::class.java)
+            println("✅ Account: ${account.email}")
+            println("✅ ID Token present: ${account.idToken != null}")
+
+            val idToken = account.idToken
+            if (idToken != null) {
+                viewModel.signInWithGoogle(idToken)
+            } else {
+                println("❌ ID Token is null")
+                Toast.makeText(context, "No se pudo obtener el token", Toast.LENGTH_LONG).show()
+            }
+        } catch (e: ApiException) {
+            println("❌ ApiException: ${e.statusCode} - ${e.localizedMessage}")
+            when (e.statusCode) {
+                12501 -> {
+                    println("ℹ️ Usuario canceló la operación")
+                    // No mostrar toast molesto
+                }
+                12502 -> {
+                    Toast.makeText(context, "Error de red", Toast.LENGTH_LONG).show()
+                }
+                else -> {
+                    Toast.makeText(context, "Error: ${e.localizedMessage}", Toast.LENGTH_LONG).show()
+                }
+            }
+        }
+    }
+
+// ✅ CORREGIR SOLO ESTA PARTE en LoginScreen.kt (línea ~90-105)
+    LaunchedEffect(authState) {
+        val currentAuthState = authState // ✅ Variable local
+        when (currentAuthState) {
+            is AuthState.Loading -> {
+                // No hacer nada durante loading
+            }
+            is AuthState.Unauthenticated -> {
+                // No hacer nada si no está autenticado
+            }
+            is AuthState.Authenticated -> {
+                onLoginSuccess()
+            }
+            is AuthState.Error -> {
+                Toast.makeText(context, currentAuthState.message, Toast.LENGTH_LONG).show() // ✅ Ahora funciona
+                viewModel.clearError()
+            }
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -90,7 +179,8 @@ fun LoginScreen(
             colors = OutlinedTextFieldDefaults.colors(
                 unfocusedBorderColor = Color.LightGray,
                 focusedBorderColor = redColor
-            )
+            ),
+            enabled = isEnabled // ✅ Usar variable derivada
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -113,7 +203,8 @@ fun LoginScreen(
             colors = OutlinedTextFieldDefaults.colors(
                 unfocusedBorderColor = Color.LightGray,
                 focusedBorderColor = redColor
-            )
+            ),
+            enabled = isEnabled // ✅ Usar variable derivada
         )
 
         Spacer(modifier = Modifier.height(8.dp))
@@ -128,7 +219,8 @@ fun LoginScreen(
                 Checkbox(
                     checked = rememberMe,
                     onCheckedChange = { rememberMe = it },
-                    colors = CheckboxDefaults.colors(checkedColor = redColor)
+                    colors = CheckboxDefaults.colors(checkedColor = redColor),
+                    enabled = isEnabled // ✅ Usar variable derivada
                 )
                 Text(
                     text = "Recuerdame",
@@ -137,7 +229,10 @@ fun LoginScreen(
                 )
             }
 
-            TextButton(onClick = { /* Handle forgot password */ }) {
+            TextButton(
+                onClick = { /* Handle forgot password */ },
+                enabled = isEnabled // ✅ Usar variable derivada
+            ) {
                 Text(
                     text = "¿Has olvidado tu contraseña?",
                     fontSize = 12.sp,
@@ -148,29 +243,37 @@ fun LoginScreen(
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        // Botón Next
+        // Botón Next (para email/password)
         Button(
-            onClick = { onLoginSuccess() },
+            onClick = { /* Implementar login tradicional si es necesario */ },
             modifier = Modifier
                 .fillMaxWidth()
                 .height(50.dp),
             colors = ButtonDefaults.buttonColors(
                 containerColor = redColor
             ),
-            shape = RoundedCornerShape(8.dp)
+            shape = RoundedCornerShape(8.dp),
+            enabled = isEnabled && email.isNotBlank() && password.isNotBlank() // ✅ Usar variable derivada
         ) {
-            Text(
-                text = "Next",
-                color = Color.White,
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Medium
-            )
-            Spacer(modifier = Modifier.width(8.dp))
-            Text(
-                text = ">",
-                color = Color.White,
-                fontSize = 16.sp
-            )
+            if (isLoading) { // ✅ Usar variable derivada
+                CircularProgressIndicator(
+                    color = Color.White,
+                    modifier = Modifier.size(20.dp)
+                )
+            } else {
+                Text(
+                    text = "Next",
+                    color = Color.White,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Medium
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text = ">",
+                    color = Color.White,
+                    fontSize = 16.sp
+                )
+            }
         }
 
         Spacer(modifier = Modifier.height(24.dp))
@@ -199,7 +302,12 @@ fun LoginScreen(
 
         // Botón de Google Sign In
         OutlinedButton(
-            onClick = { onLoginSuccess() },
+            onClick = {
+                // Limpiar cuenta anterior si existe
+                googleSignInClient.signOut()
+                val signInIntent = googleSignInClient.signInIntent
+                googleSignInLauncher.launch(signInIntent)
+            },
             modifier = Modifier
                 .fillMaxWidth()
                 .height(50.dp),
@@ -207,18 +315,26 @@ fun LoginScreen(
                 width = 1.dp,
                 brush = androidx.compose.ui.graphics.SolidColor(Color.LightGray)
             ),
-            shape = RoundedCornerShape(8.dp)
+            shape = RoundedCornerShape(8.dp),
+            enabled = isEnabled // ✅ Usar variable derivada
         ) {
-            Text(
-                text = "🔍",
-                fontSize = 20.sp
-            )
-            Spacer(modifier = Modifier.width(12.dp))
-            Text(
-                text = "Continuar con Google",
-                color = Color.Black,
-                fontSize = 14.sp
-            )
+            if (isLoading) { // ✅ Usar variable derivada
+                CircularProgressIndicator(
+                    color = redColor,
+                    modifier = Modifier.size(20.dp)
+                )
+            } else {
+                Text(
+                    text = "🔍",
+                    fontSize = 20.sp
+                )
+                Spacer(modifier = Modifier.width(12.dp))
+                Text(
+                    text = "Continuar con Google",
+                    color = Color.Black,
+                    fontSize = 14.sp
+                )
+            }
         }
 
         Spacer(modifier = Modifier.weight(1f))
@@ -231,7 +347,8 @@ fun LoginScreen(
                 fontSize = 14.sp
             )
             TextButton(
-                onClick = { /* Handle register */ }
+                onClick = { /* Handle register */ },
+                enabled = isEnabled // ✅ Usar variable derivada
             ) {
                 Text(
                     text = "Regístrese ahora",
