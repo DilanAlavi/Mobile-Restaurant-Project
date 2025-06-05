@@ -98,23 +98,15 @@ fun LoginScreen(
         }
     }
 
-// ✅ CORREGIR SOLO ESTA PARTE en LoginScreen.kt (línea ~90-105)
+
     LaunchedEffect(authState) {
-        val currentAuthState = authState // ✅ Variable local
-        when (currentAuthState) {
-            is AuthState.Loading -> {
-                // No hacer nada durante loading
-            }
-            is AuthState.Unauthenticated -> {
-                // No hacer nada si no está autenticado
-            }
-            is AuthState.Authenticated -> {
-                onLoginSuccess()
-            }
+        val state = authState
+        when (state) {
             is AuthState.Error -> {
-                Toast.makeText(context, currentAuthState.message, Toast.LENGTH_LONG).show() // ✅ Ahora funciona
+                Toast.makeText(context, state.message, Toast.LENGTH_LONG).show()
                 viewModel.clearError()
             }
+            else -> { /* No hacer nada, MainActivity maneja la navegación */ }
         }
     }
 

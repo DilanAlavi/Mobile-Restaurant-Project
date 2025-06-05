@@ -8,7 +8,7 @@ import androidx.navigation.compose.composable
 @Composable
 fun AuthNavigation(
     navController: NavHostController,
-    onAuthSuccess: () -> Unit
+    onAuthSuccess: () -> Unit // ❌ Ya no se necesita
 ) {
     NavHost(
         navController = navController,
@@ -21,7 +21,7 @@ fun AuthNavigation(
         composable("login_screen") {
             LoginScreen(
                 navController = navController,
-                onLoginSuccess = onAuthSuccess
+                onLoginSuccess = { } // ❌ Vacío, no se usa
             )
         }
     }

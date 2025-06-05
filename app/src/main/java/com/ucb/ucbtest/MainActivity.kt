@@ -27,7 +27,6 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
-
 @Composable
 fun MainApp(
     authViewModel: AuthViewModel = hiltViewModel()
@@ -37,22 +36,16 @@ fun MainApp(
     val mainNavController = rememberNavController()
 
     when (authState) {
-        is AuthState.Loading -> {
-            // Mostrar splash screen mientras se verifica el estado
+        is AuthState.Loading,
+        is AuthState.Unauthenticated,
+        is AuthState.Error -> {
             AuthNavigation(
                 navController = authNavController,
-                onAuthSuccess = { /* El ViewModel maneja el cambio de estado */ }
+                onAuthSuccess = { /* No usado */ }
             )
         }
-        is AuthState.Unauthenticated, is AuthState.Error -> {
-            // Mostrar navegación de autenticación
-            AuthNavigation(
-                navController = authNavController,
-                onAuthSuccess = { /* El ViewModel maneja el cambio de estado */ }
-            )
-        }
+
         is AuthState.Authenticated -> {
-            // Mostrar la app principal con bottom navigation
             Scaffold(
                 bottomBar = { BottomBar(mainNavController) }
             ) { innerPadding ->
