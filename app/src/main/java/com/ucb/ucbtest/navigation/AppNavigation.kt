@@ -18,6 +18,7 @@ import com.ucb.ucbtest.meal.MealDetailScreen
 import com.ucb.ucbtest.meal.MealUI
 import com.ucb.ucbtest.search.SearchScreen
 import com.ucb.ucbtest.settings.SettingsScreen
+import com.ucb.ucbtest.cart.CartScreen
 
 @Composable
 fun AppNavigation(
