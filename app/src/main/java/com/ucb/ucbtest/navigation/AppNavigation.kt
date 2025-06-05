@@ -66,7 +66,10 @@ fun AppNavigation(
         ) { backStackEntry ->
             val mealJson = backStackEntry.arguments?.getString("meal")
             val meal = Gson().fromJson(mealJson, Meal::class.java)
-            MealDetailScreen(meal = meal)
+            MealDetailScreen(meal = meal, navController = navController) // AGREGAR navController
+        }
+        composable("cart") {
+            CartScreen(navController = navController)
         }
     }
 }

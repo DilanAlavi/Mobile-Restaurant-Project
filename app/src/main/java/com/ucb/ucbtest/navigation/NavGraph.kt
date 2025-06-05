@@ -40,8 +40,7 @@ fun NavGraph(navController: NavHostController) {
 
         // CART - Pantalla del carrito (placeholder)
         composable(BottomNavItem.CART.route) {
-            // TODO: Implementar CartScreen
-            // CartScreen()
+            CartScreen(navController = navController)
         }
 
         // PROFILE - Pantalla del perfil (placeholder)
@@ -57,7 +56,7 @@ fun NavGraph(navController: NavHostController) {
         ) { backStackEntry ->
             val mealJson = backStackEntry.arguments?.getString("meal")
             val meal = Gson().fromJson(mealJson, Meal::class.java)
-            MealDetailScreen(meal = meal)
+            MealDetailScreen(meal = meal, navController = navController) // AGREGAR navController
         }
     }
 }
