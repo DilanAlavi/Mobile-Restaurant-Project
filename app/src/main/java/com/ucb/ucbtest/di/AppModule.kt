@@ -24,9 +24,52 @@ import com.ucb.usecases.GetMealByName
 import com.ucb.usecases.GetTopPicks
 import com.ucb.usecases.SearchMealsByName
 import com.ucb.usecases.GetMealById
+import com.ucb.usecases.cart.AddToCartUseCase
+import com.ucb.usecases.cart.GetCartItemsUseCase
+import com.ucb.usecases.cart.GetCartTotalUseCase
+import com.ucb.usecases.cart.RemoveFromCartUseCase
+import com.ucb.usecases.cart.UpdateCartQuantityUseCase
+import com.ucb.data.cart.ICartRepository
+import com.ucb.data.cart.CartRepository
+
 @Module
 @InstallIn(SingletonComponent::class)
 object AppModule {
+    @Provides
+    @Singleton
+    fun provideCartRepository(): ICartRepository {
+        return CartRepository()
+    }
+
+    @Provides
+    @Singleton
+    fun provideAddToCartUseCase(cartRepository: ICartRepository): AddToCartUseCase {
+        return AddToCartUseCase(cartRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideGetCartItemsUseCase(cartRepository: ICartRepository): GetCartItemsUseCase {
+        return GetCartItemsUseCase(cartRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideUpdateCartQuantityUseCase(cartRepository: ICartRepository): UpdateCartQuantityUseCase {
+        return UpdateCartQuantityUseCase(cartRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideRemoveFromCartUseCase(cartRepository: ICartRepository): RemoveFromCartUseCase {
+        return RemoveFromCartUseCase(cartRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideGetCartTotalUseCase(cartRepository: ICartRepository): GetCartTotalUseCase {
+        return GetCartTotalUseCase(cartRepository)
+    }
     @Provides
     @Singleton
     fun provideMealRemoteDataSource(retrofitBuilder: RetrofitBuilder): IMealRemoteDataSource {
