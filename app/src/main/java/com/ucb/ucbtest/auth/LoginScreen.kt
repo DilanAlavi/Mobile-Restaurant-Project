@@ -29,14 +29,20 @@ import com.google.android.gms.common.api.ApiException
 import com.ucb.ucbtest.R
 import com.ucb.ucbtest.auth.AuthState
 import com.ucb.ucbtest.auth.AuthViewModel
+import androidx.compose.material3.Icon
+import androidx.compose.ui.res.painterResource
+
+
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginScreen(
     navController: NavController,
     onLoginSuccess: () -> Unit,
-    viewModel: AuthViewModel = hiltViewModel()
+    viewModel: AuthViewModel
 ) {
+    println("🔍 LoginScreen: AuthViewModel instance: ${viewModel.hashCode()}")
     val redColor = Color(0xFFB71C1C)
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -61,40 +67,27 @@ fun LoginScreen(
 
 
 
-    // Agregar logs para debug
+// En LoginScreen.kt - actualizar el googleSignInLauncher
     val googleSignInLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
-        println("🔍 Result code: ${result.resultCode}")
-        println("🔍 Result data: ${result.data}")
-
         val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
         try {
             val account = task.getResult(ApiException::class.java)
-            println("✅ Account: ${account.email}")
-            println("✅ ID Token present: ${account.idToken != null}")
+            println("✅ GoogleSignIn: Account obtenido - ${account.email}")
 
             val idToken = account.idToken
             if (idToken != null) {
+                println("✅ GoogleSignIn: ID Token obtenido, llamando ViewModel")
+                println("🚀 GoogleSignIn: Token length: ${idToken.length}")
                 viewModel.signInWithGoogle(idToken)
             } else {
-                println("❌ ID Token is null")
+                println("❌ GoogleSignIn: ID Token es null")
                 Toast.makeText(context, "No se pudo obtener el token", Toast.LENGTH_LONG).show()
             }
         } catch (e: ApiException) {
-            println("❌ ApiException: ${e.statusCode} - ${e.localizedMessage}")
-            when (e.statusCode) {
-                12501 -> {
-                    println("ℹ️ Usuario canceló la operación")
-                    // No mostrar toast molesto
-                }
-                12502 -> {
-                    Toast.makeText(context, "Error de red", Toast.LENGTH_LONG).show()
-                }
-                else -> {
-                    Toast.makeText(context, "Error: ${e.localizedMessage}", Toast.LENGTH_LONG).show()
-                }
-            }
+            println("❌ GoogleSignIn: Error ${e.statusCode}: ${e.localizedMessage}")
+            // ... resto del manejo de errores
         }
     }
 
@@ -316,9 +309,11 @@ fun LoginScreen(
                     modifier = Modifier.size(20.dp)
                 )
             } else {
-                Text(
-                    text = "🔍",
-                    fontSize = 20.sp
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_google_official),
+                    contentDescription = "Google",
+                    modifier = Modifier.size(20.dp),
+                    tint = Color.Unspecified // ⚠️ MUY IMPORTANTE para mantener los colores
                 )
                 Spacer(modifier = Modifier.width(12.dp))
                 Text(
@@ -329,10 +324,12 @@ fun LoginScreen(
             }
         }
 
-        Spacer(modifier = Modifier.weight(1f))
+
 
         // Texto de registro
-        Row {
+        Row(
+            verticalAlignment = Alignment.CenterVertically // ✅ Esto alinea verticalmente
+        ) {
             Text(
                 text = "¿Es nuevo? ",
                 color = Color.Gray,
@@ -340,7 +337,8 @@ fun LoginScreen(
             )
             TextButton(
                 onClick = { /* Handle register */ },
-                enabled = isEnabled // ✅ Usar variable derivada
+                enabled = isEnabled,
+                contentPadding = PaddingValues(horizontal = 4.dp, vertical = 0.dp) // ✅ Reducir padding
             ) {
                 Text(
                     text = "Regístrese ahora",

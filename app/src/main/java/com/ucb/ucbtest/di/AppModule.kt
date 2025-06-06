@@ -24,13 +24,13 @@ import com.ucb.usecases.GetCategoriesMeal
 import com.ucb.usecases.GetMealByName
 import com.ucb.usecases.GetTopPicks
 
-
 import com.ucb.data.repository.AuthRepository
 import com.ucb.framework.repository.AuthRepositoryImpl
 import com.ucb.usecases.auth.CheckAuthStateUseCase
 import com.ucb.usecases.auth.GetCurrentUserUseCase
 import com.ucb.usecases.auth.SignInWithGoogleUseCase
 import com.ucb.usecases.auth.SignOutUseCase
+
 @Module
 @InstallIn(SingletonComponent::class)
 object AppModule {
@@ -142,6 +142,4 @@ object AppModule {
     fun provideCheckAuthStateUseCase(authRepository: AuthRepository): CheckAuthStateUseCase {
         return CheckAuthStateUseCase(authRepository)
     }
-
-
 }

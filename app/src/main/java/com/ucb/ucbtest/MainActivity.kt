@@ -27,6 +27,7 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
+
 @Composable
 fun MainApp(
     authViewModel: AuthViewModel = hiltViewModel()
@@ -35,21 +36,55 @@ fun MainApp(
     val authNavController = rememberNavController()
     val mainNavController = rememberNavController()
 
+    // ✅ Manejar cambios de estado de autenticación
+    LaunchedEffect(authState) {
+        val currentState = authState
+        println("🏠 MainActivity: Estado cambió a: $currentState")
+
+        when (currentState) {
+            is AuthState.Authenticated -> {
+                println("🎉 MainActivity: ¡USUARIO AUTENTICADO! ${currentState.user.name}")
+            }
+            is AuthState.Unauthenticated -> {
+                println("🚪 MainActivity: Usuario desautenticado - Limpiando navegación")
+                // Limpiar el stack de navegación principal y redirigir a splash
+                authNavController.navigate("splash_screen") {
+                    // Limpiar todo el stack de navegación
+                    popUpTo(0) { inclusive = true }
+                    launchSingleTop = true
+                }
+            }
+            else -> println("🏠 MainActivity: Estado: $currentState")
+        }
+    }
+
+    // ✅ LOG DE VERIFICACIÓN DE INSTANCIA
+    println("🔍 MainActivity: AuthViewModel instance: ${authViewModel.hashCode()}")
+
     when (authState) {
         is AuthState.Loading,
         is AuthState.Unauthenticated,
         is AuthState.Error -> {
+            println("🔄 MainActivity: Mostrando AuthNavigation")
             AuthNavigation(
                 navController = authNavController,
-                onAuthSuccess = { /* No usado */ }
+                onAuthSuccess = {
+                    // Opcional: Lógica adicional cuando se autentica exitosamente
+                    println("✅ MainActivity: Login exitoso")
+                },
+                authViewModel = authViewModel // ✅ Pasar la misma instancia
             )
         }
 
         is AuthState.Authenticated -> {
+            println("🎯 MainActivity: ¡MOSTRANDO APP PRINCIPAL!")
             Scaffold(
                 bottomBar = { BottomBar(mainNavController) }
             ) { innerPadding ->
-                AppNavigation(mainNavController, innerPadding)
+                AppNavigation(
+                    navController = mainNavController,
+                    innerPadding = innerPadding
+                )
             }
         }
     }

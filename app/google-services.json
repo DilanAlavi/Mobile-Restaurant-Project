@@ -14,11 +14,11 @@
       },
       "oauth_client": [
         {
-          "client_id": "428723974025-01gjtklve505vht0pg1fipqf3bndepqg.apps.googleusercontent.com",
+          "client_id": "428723974025-4rsm6reaghd9u835si1jmtb8si2dj62d.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.ucb.ucbtest",
-            "certificate_hash": "6a1eedbf1f53bba89ddabbac5ad9b75b0acd969b"
+            "certificate_hash": "b7a8622ef6a7c9b7a95f96e4e8d9d3d168046668"
           }
         },
         {

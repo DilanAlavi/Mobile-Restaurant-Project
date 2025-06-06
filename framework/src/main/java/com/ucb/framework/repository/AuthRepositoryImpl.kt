@@ -15,21 +15,27 @@ class AuthRepositoryImpl(
     private val firebaseAuth: FirebaseAuth // ✅ Constructor normal
 ) : AuthRepository {
 
+    // framework/src/main/java/com/ucb/framework/repository/AuthRepositoryImpl.kt
     override suspend fun signInWithGoogle(idToken: String): Result<User> {
         return try {
+            println("🔥 AuthRepositoryImpl: Iniciando signInWithGoogle")
             val credential = GoogleAuthProvider.getCredential(idToken, null)
             val result = firebaseAuth.signInWithCredential(credential).await()
             val firebaseUser = result.user
 
             if (firebaseUser != null) {
                 val user = firebaseUser.toUser()
+                println("✅ AuthRepositoryImpl: Login exitoso - User: ${user.name} (${user.email})")
                 Result.success(user)
             } else {
+                println("❌ AuthRepositoryImpl: FirebaseUser es null")
                 Result.failure(AuthError.InvalidCredentials)
             }
         } catch (e: FirebaseAuthException) {
+            println("❌ AuthRepositoryImpl: FirebaseAuthException - ${e.message}")
             Result.failure(e.toAuthError())
         } catch (e: Exception) {
+            println("❌ AuthRepositoryImpl: Exception - ${e.message}")
             Result.failure(AuthError.Unknown(e.message))
         }
     }

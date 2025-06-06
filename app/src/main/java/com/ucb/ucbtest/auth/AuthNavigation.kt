@@ -5,10 +5,12 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 
+// auth/AuthNavigation.kt
 @Composable
 fun AuthNavigation(
     navController: NavHostController,
-    onAuthSuccess: () -> Unit // ❌ Ya no se necesita
+    onAuthSuccess: () -> Unit,
+    authViewModel: AuthViewModel // ✅ Recibir ViewModel desde MainActivity
 ) {
     NavHost(
         navController = navController,
@@ -21,7 +23,8 @@ fun AuthNavigation(
         composable("login_screen") {
             LoginScreen(
                 navController = navController,
-                onLoginSuccess = { } // ❌ Vacío, no se usa
+                onLoginSuccess = onAuthSuccess,
+                viewModel = authViewModel // ✅ Pasar el mismo ViewModel
             )
         }
     }
