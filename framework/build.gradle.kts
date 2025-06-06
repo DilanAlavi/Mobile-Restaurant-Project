@@ -34,6 +34,7 @@ android {
     }
 }
 
+
 dependencies {
 
     implementation(libs.androidx.core.ktx)
@@ -64,5 +65,8 @@ dependencies {
 
     implementation(project(":data"))
     implementation(project(":domain"))
+
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.auth.ktx)
 
 }
