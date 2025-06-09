@@ -70,4 +70,11 @@ class CartViewModel @Inject constructor(
             removeFromCartUseCase(mealId)
         }
     }
+    fun clearCart() {
+        viewModelScope.launch {
+            // Limpiar la lista
+            _cartItems.clear()
+            refreshCart()
+        }
+    }
 }
