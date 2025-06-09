@@ -31,6 +31,11 @@ import com.ucb.usecases.cart.RemoveFromCartUseCase
 import com.ucb.usecases.cart.UpdateCartQuantityUseCase
 import com.ucb.data.cart.ICartRepository
 import com.ucb.data.cart.CartRepository
+import com.ucb.data.order.IOrderRepository
+import com.ucb.framework.order.OrderRemoteDataSource
+import com.ucb.usecases.order.GetOrdersHistoryUseCase
+import com.ucb.usecases.order.SaveOrderUseCase
+import com.ucb.usecases.cart.ClearCartUseCase
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -40,7 +45,29 @@ object AppModule {
     fun provideCartRepository(): ICartRepository {
         return CartRepository()
     }
+    @Provides
+    @Singleton
+    fun provideOrderRepository(@ApplicationContext context: Context): IOrderRepository {
+        return OrderRemoteDataSource(context)
+    }
 
+    @Provides
+    @Singleton
+    fun provideSaveOrderUseCase(orderRepository: IOrderRepository): SaveOrderUseCase {
+        return SaveOrderUseCase(orderRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideGetOrdersHistoryUseCase(orderRepository: IOrderRepository): GetOrdersHistoryUseCase {
+        return GetOrdersHistoryUseCase(orderRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideClearCartUseCase(cartRepository: ICartRepository): ClearCartUseCase {
+        return ClearCartUseCase(cartRepository)
+    }
     @Provides
     @Singleton
     fun provideAddToCartUseCase(cartRepository: ICartRepository): AddToCartUseCase {
