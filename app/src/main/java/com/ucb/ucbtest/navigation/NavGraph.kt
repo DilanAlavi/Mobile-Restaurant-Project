@@ -14,6 +14,7 @@ import com.ucb.ucbtest.meal.MealDetailScreen
 import com.ucb.ucbtest.meal.MealUI
 import com.ucb.ucbtest.search.SearchScreen
 import com.ucb.ucbtest.cart.CartScreen
+import com.ucb.ucbtest.settings.SettingsScreen
 
 @Composable
 fun NavGraph(navController: NavHostController) {
@@ -58,6 +59,17 @@ fun NavGraph(navController: NavHostController) {
             val mealJson = backStackEntry.arguments?.getString("meal")
             val meal = Gson().fromJson(mealJson, Meal::class.java)
             MealDetailScreen(meal = meal, navController = navController) // AGREGAR navController
+        }
+        composable("settings") {
+            SettingsScreen(
+                navController = navController,
+                onItemSelected = { item ->
+                    when (item) {
+                        "Mis pedidos" -> navController.navigate("orders_history")
+                        // otros casos si los tienes
+                    }
+                }
+            )
         }
     }
 }
