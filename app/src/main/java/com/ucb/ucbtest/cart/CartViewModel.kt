@@ -18,7 +18,8 @@ class CartViewModel @Inject constructor(
     private val getCartItemsUseCase: GetCartItemsUseCase,
     private val updateCartQuantityUseCase: UpdateCartQuantityUseCase,
     private val removeFromCartUseCase: RemoveFromCartUseCase,
-    private val getCartTotalUseCase: GetCartTotalUseCase
+    private val getCartTotalUseCase: GetCartTotalUseCase,
+    private val clearCartUseCase: ClearCartUseCase
 ) : ViewModel() {
 
     data class CartState(
@@ -72,8 +73,7 @@ class CartViewModel @Inject constructor(
     }
     fun clearCart() {
         viewModelScope.launch {
-            // Limpiar la lista
-            _cartItems.clear()
+            clearCartUseCase()
             refreshCart()
         }
     }
