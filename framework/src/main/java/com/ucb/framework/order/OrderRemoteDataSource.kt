@@ -1,15 +1,16 @@
-package com.ucb.data.order
+package com.ucb.framework.order
 
 import android.content.Context
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.ucb.data.order.IOrderRepository
 import com.ucb.domain.Order
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class OrderRepository @Inject constructor(
+class OrderRemoteDataSource @Inject constructor(
     @ApplicationContext private val context: Context
 ) : IOrderRepository {
 
@@ -28,8 +29,12 @@ class OrderRepository @Inject constructor(
     override suspend fun getAllOrders(): List<Order> {
         val ordersJson = sharedPreferences.getString(ordersKey, null)
         return if (ordersJson != null) {
-            val type = object : TypeToken<List<Order>>() {}.type
-            gson.fromJson(ordersJson, type) ?: emptyList()
+            try {
+                val type = object : TypeToken<List<Order>>() {}.type
+                gson.fromJson(ordersJson, type) ?: emptyList()
+            } catch (e: Exception) {
+                emptyList()
+            }
         } else {
             emptyList()
         }
