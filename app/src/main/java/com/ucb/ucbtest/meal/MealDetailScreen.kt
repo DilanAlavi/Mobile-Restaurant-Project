@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -31,7 +32,7 @@ fun MealDetailScreen(
     val cartViewModel: CartViewModel = hiltViewModel()
     val red = Color(0xFFC71818)
     val darkRed = Color(0xFFA01111)
-
+    //val context = LocalContext.current
     Column(
         modifier = Modifier
             .fillMaxSize()

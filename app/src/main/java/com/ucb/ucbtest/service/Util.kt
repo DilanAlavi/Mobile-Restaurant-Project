@@ -25,7 +25,22 @@ class Util {
                 requestPermission(context)
             }
         }
+        private const val CHANNEL_ID = "cart_channel"
+        private const val CHANNEL_NAME = "Notificaciones del Carrito"
+        private const val CHANNEL_DESC = "Notificaciones cuando se agregan productos al carrito"
 
+        fun sendNotificacionCarrito(context: Context, titulo: String, contenido: String) {
+            if (ActivityCompat.checkSelfPermission(
+                    context,
+                    Manifest.permission.POST_NOTIFICATIONS
+                ) == PackageManager.PERMISSION_GRANTED || Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU
+            ) {
+                // Permiso ya otorgado o no es necesario
+                showCartNotification(context, titulo, contenido)
+            } else {
+                requestPermission(context)
+            }
+        }
         @RequiresPermission(Manifest.permission.POST_NOTIFICATIONS)
         private fun showNotification(context: Context) {
             // Create NotificationChannel for Android 8.0+ (API 26+)
@@ -55,7 +70,30 @@ class Util {
             val notificationManager = NotificationManagerCompat.from(context)
             notificationManager.notify(1, notification)
         }
+        @RequiresPermission(Manifest.permission.POST_NOTIFICATIONS)
+        private fun showCartNotification(context: Context, titulo: String, contenido: String) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                val channel = NotificationChannel(
+                    CHANNEL_ID,
+                    CHANNEL_NAME,
+                    NotificationManager.IMPORTANCE_DEFAULT
+                ).apply {
+                    description = CHANNEL_DESC
+                }
+                val manager = context.getSystemService(NotificationManager::class.java)
+                manager.createNotificationChannel(channel)
+            }
 
+            val notification = NotificationCompat.Builder(context, CHANNEL_ID)
+                .setContentTitle(titulo)
+                .setContentText(contenido)
+                .setSmallIcon(R.drawable.ic_dialog_info)
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                .setAutoCancel(true)
+                .build()
+
+            NotificationManagerCompat.from(context).notify(1001, notification)
+        }
         private fun requestPermission(context: Context) {
             if (context is Activity) {
                 ActivityCompat.requestPermissions(
