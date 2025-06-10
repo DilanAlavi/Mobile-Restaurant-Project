@@ -19,6 +19,8 @@ import com.ucb.ucbtest.meal.MealUI
 import com.ucb.ucbtest.search.SearchScreen
 import com.ucb.ucbtest.settings.SettingsScreen
 import com.ucb.ucbtest.cart.CartScreen
+import com.ucb.ucbtest.checkout.CheckoutScreen
+import com.ucb.ucbtest.orders.OrdersHistoryScreen
 
 @Composable
 fun AppNavigation(
@@ -71,6 +73,15 @@ fun AppNavigation(
         }
         composable("cart") {
             CartScreen(navController = navController)
+        }
+        // Pantalla de checkout
+        composable("checkout") {
+            CheckoutScreen(navController = navController)
+        }
+
+        // Pantalla de historial de órdenes
+        composable("orders_history") {
+            OrdersHistoryScreen(navController = navController)
         }
     }
 }
