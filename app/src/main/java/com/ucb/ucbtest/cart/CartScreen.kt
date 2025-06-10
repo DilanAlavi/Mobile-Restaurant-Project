@@ -154,7 +154,7 @@ fun CartScreen(
                         Spacer(modifier = Modifier.height(16.dp))
 
                         Button(
-                            onClick = { /* TODO: Implementar orden */ },
+                            onClick = { navController.navigate("checkout") },
                             modifier = Modifier.fillMaxWidth(),
                             colors = ButtonDefaults.buttonColors(containerColor = red),
                             shape = RoundedCornerShape(12.dp)
