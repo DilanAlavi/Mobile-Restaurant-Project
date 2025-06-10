@@ -22,6 +22,14 @@
           }
         },
         {
+          "client_id": "428723974025-mc2nncnek1v654t0jt9hrgbo1pbgchf5.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.ucb.ucbtest",
+            "certificate_hash": "f02b5d8dd1587a3ac6297a38b048606c881f654b"
+          }
+        },
+        {
           "client_id": "428723974025-nt7vuenm5o07keapn8vr5dhcn68k6908.apps.googleusercontent.com",
           "client_type": 3
         }
