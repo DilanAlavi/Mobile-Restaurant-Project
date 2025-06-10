@@ -18,7 +18,8 @@ class CartViewModel @Inject constructor(
     private val getCartItemsUseCase: GetCartItemsUseCase,
     private val updateCartQuantityUseCase: UpdateCartQuantityUseCase,
     private val removeFromCartUseCase: RemoveFromCartUseCase,
-    private val getCartTotalUseCase: GetCartTotalUseCase
+    private val getCartTotalUseCase: GetCartTotalUseCase,
+    private val clearCartUseCase: ClearCartUseCase
 ) : ViewModel() {
 
     data class CartState(
@@ -69,5 +70,14 @@ class CartViewModel @Inject constructor(
         viewModelScope.launch {
             removeFromCartUseCase(mealId)
         }
+    }
+    fun clearCart() {
+        viewModelScope.launch {
+            clearCartUseCase()
+            refreshCart()
+        }
+    }
+    private fun refreshCart() {
+        observeCart()
     }
 }

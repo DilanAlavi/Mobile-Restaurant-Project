@@ -154,18 +154,25 @@ fun CartScreen(
                         Spacer(modifier = Modifier.height(16.dp))
 
                         Button(
-                            onClick = { /* TODO: Implementar orden */ },
+                            onClick = { navController.navigate("checkout") },
                             modifier = Modifier.fillMaxWidth(),
                             colors = ButtonDefaults.buttonColors(containerColor = red),
                             shape = RoundedCornerShape(12.dp)
                         ) {
-                            Text(
-                                "Ordenar Todo",
-                                color = Color.White,
-                                fontSize = 18.sp,
-                                fontWeight = FontWeight.Bold,
-                                modifier = Modifier.padding(vertical = 8.dp)
-                            )
+                            Button(
+                                onClick = { navController.navigate("checkout") }, // CAMBIAR esta línea
+                                modifier = Modifier.fillMaxWidth(),
+                                colors = ButtonDefaults.buttonColors(containerColor = red),
+                                shape = RoundedCornerShape(12.dp)
+                            ) {
+                                Text(
+                                    "Ordenar Todo",
+                                    color = Color.White,
+                                    fontSize = 18.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    modifier = Modifier.padding(vertical = 8.dp)
+                                )
+                            }
                         }
                     }
                 }

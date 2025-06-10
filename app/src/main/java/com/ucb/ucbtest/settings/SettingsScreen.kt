@@ -79,7 +79,12 @@ fun SettingsScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(vertical = 12.dp)
-                        .clickable { onItemSelected(item) }
+                        .clickable {
+                            when (item) {
+                                "Mis pedidos" -> navController.navigate("orders_history")
+                                else -> onItemSelected(item)
+                            }
+                        }
                 )
                 HorizontalDivider()
             }
@@ -143,5 +148,6 @@ fun SettingsScreen(
                 }
             }
         }
+
     }
 }
