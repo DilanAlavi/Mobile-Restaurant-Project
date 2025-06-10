@@ -77,4 +77,7 @@ class CartViewModel @Inject constructor(
             refreshCart()
         }
     }
+    private fun refreshCart() {
+        observeCart()
+    }
 }
