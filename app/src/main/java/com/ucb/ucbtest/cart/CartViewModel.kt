@@ -1,9 +1,11 @@
 package com.ucb.ucbtest.cart
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ucb.domain.CartItem
 import com.ucb.domain.Meal
+import com.ucb.ucbtest.service.Util
 import com.ucb.usecases.cart.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -54,9 +56,14 @@ class CartViewModel @Inject constructor(
         }
     }
 
-    fun addToCart(meal: Meal) {
+    fun addToCart(meal: Meal, context: Context) {
         viewModelScope.launch {
             addToCartUseCase(meal)
+            Util.sendNotificacionCarrito(
+                context,
+                "Producto agregado",
+                "'${meal.strMeal}' fue añadido al carrito"
+            )
         }
     }
 

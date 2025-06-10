@@ -32,7 +32,7 @@ fun MealDetailScreen(
     val cartViewModel: CartViewModel = hiltViewModel()
     val red = Color(0xFFC71818)
     val darkRed = Color(0xFFA01111)
-    //val context = LocalContext.current
+    val context = LocalContext.current
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -131,7 +131,7 @@ fun MealDetailScreen(
             // Botón Añadir al carrito
             Button(
                 onClick = {
-                    cartViewModel.addToCart(meal)
+                    cartViewModel.addToCart(meal, context)
                     navController.navigate("cart")
                 },
                 modifier = Modifier.fillMaxWidth(),
@@ -150,7 +150,7 @@ fun MealDetailScreen(
             // Botón Proceder al pago - ARREGLADO
             Button(
                 onClick = {
-                    cartViewModel.addToCart(meal)
+                    cartViewModel.addToCart(meal,context)
                     navController.navigate("cart")
                 },
                 modifier = Modifier
