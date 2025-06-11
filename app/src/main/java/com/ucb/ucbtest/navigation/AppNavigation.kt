@@ -21,6 +21,7 @@ import com.ucb.ucbtest.settings.SettingsScreen
 import com.ucb.ucbtest.cart.CartScreen
 import com.ucb.ucbtest.checkout.CheckoutScreen
 import com.ucb.ucbtest.orders.OrdersHistoryScreen
+import com.ucb.ucbtest.categoryproducts.CategoryProductsScreen
 
 @Composable
 fun AppNavigation(
@@ -55,6 +56,21 @@ fun AppNavigation(
         // NUEVA: Pantalla de búsqueda
         composable("search") {
             SearchScreen(
+                onMealClick = { meal ->
+                    val mealJson = Uri.encode(Gson().toJson(meal))
+                    navController.navigate(Screen.MealDetailScreen.createRoute(mealJson))
+                }
+            )
+        }
+
+        composable(
+            route = "category_products/{categoryName}",
+            arguments = listOf(navArgument("categoryName") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val categoryName = backStackEntry.arguments?.getString("categoryName") ?: ""
+            CategoryProductsScreen(
+                categoryName = categoryName,
+                navController = navController,
                 onMealClick = { meal ->
                     val mealJson = Uri.encode(Gson().toJson(meal))
                     navController.navigate(Screen.MealDetailScreen.createRoute(mealJson))
