@@ -230,7 +230,11 @@ fun LoginScreen(
 
         // Botón Next (para email/password)
         Button(
-            onClick = { /* Implementar login tradicional si es necesario */ },
+            onClick = {
+                if (email.isNotBlank() && password.isNotBlank()) {
+                    viewModel.signInWithEmailPassword(email, password) // ← AGREGAR ESTA LLAMADA
+                }
+            },
             modifier = Modifier
                 .fillMaxWidth()
                 .height(50.dp),
@@ -328,7 +332,7 @@ fun LoginScreen(
 
         // Texto de registro
         Row(
-            verticalAlignment = Alignment.CenterVertically // ✅ Esto alinea verticalmente
+            verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
                 text = "¿Es nuevo? ",
@@ -336,9 +340,11 @@ fun LoginScreen(
                 fontSize = 14.sp
             )
             TextButton(
-                onClick = { /* Handle register */ },
+                onClick = {
+                    navController.navigate("register_screen")
+                },
                 enabled = isEnabled,
-                contentPadding = PaddingValues(horizontal = 4.dp, vertical = 0.dp) // ✅ Reducir padding
+                contentPadding = PaddingValues(horizontal = 4.dp, vertical = 0.dp)
             ) {
                 Text(
                     text = "Regístrese ahora",

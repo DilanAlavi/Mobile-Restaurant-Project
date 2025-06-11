@@ -7,6 +7,8 @@ import com.ucb.ucbtest.auth.AuthState
 import com.ucb.usecases.auth.CheckAuthStateUseCase
 import com.ucb.usecases.auth.GetCurrentUserUseCase
 import com.ucb.usecases.auth.SignInWithGoogleUseCase
+import com.ucb.usecases.auth.SignInWithEmailPasswordUseCase
+import com.ucb.usecases.auth.RegisterWithEmailPasswordUseCase
 import com.ucb.usecases.auth.SignOutUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -18,6 +20,8 @@ import javax.inject.Inject
 @HiltViewModel
 class AuthViewModel @Inject constructor(
     private val signInWithGoogleUseCase: SignInWithGoogleUseCase,
+    private val signInWithEmailPasswordUseCase: SignInWithEmailPasswordUseCase,
+    private val registerWithEmailPasswordUseCase: RegisterWithEmailPasswordUseCase,
     private val signOutUseCase: SignOutUseCase,
     private val getCurrentUserUseCase: GetCurrentUserUseCase,
     private val checkAuthStateUseCase: CheckAuthStateUseCase
@@ -61,6 +65,46 @@ class AuthViewModel @Inject constructor(
                 }
                 .onFailure { error ->
                     println("❌ AuthViewModel: UseCase retornó falla - ${error.message}")
+                    _authState.value = AuthState.Error(error.toUserMessage())
+                    println("❌ AuthViewModel: Estado cambiado a Error")
+                }
+        }
+    }
+
+    fun signInWithEmailPassword(email: String, password: String) {
+        viewModelScope.launch {
+            println("🚀 AuthViewModel: Iniciando signInWithEmailPassword con email: $email")
+            _authState.value = AuthState.Loading
+            println("🔄 AuthViewModel: Estado cambiado a Loading")
+
+            signInWithEmailPasswordUseCase(email, password)
+                .onSuccess { user ->
+                    println("✅ AuthViewModel: UseCase retornó éxito - User: ${user.name} (${user.email})")
+                    _authState.value = AuthState.Authenticated(user)
+                    println("✅ AuthViewModel: Estado cambiado a Authenticated")
+                }
+                .onFailure { error ->
+                    println("❌ AuthViewModel: UseCase retornó falla - ${error.message}")
+                    _authState.value = AuthState.Error(error.toUserMessage())
+                    println("❌ AuthViewModel: Estado cambiado a Error")
+                }
+        }
+    }
+
+    fun registerWithEmailPassword(email: String, password: String, name: String) {
+        viewModelScope.launch {
+            println("🚀 AuthViewModel: Iniciando registro con email: $email, name: $name")
+            _authState.value = AuthState.Loading
+            println("🔄 AuthViewModel: Estado cambiado a Loading")
+
+            registerWithEmailPasswordUseCase(email, password, name)
+                .onSuccess { user ->
+                    println("✅ AuthViewModel: Registro exitoso - User: ${user.name} (${user.email})")
+                    _authState.value = AuthState.Authenticated(user)
+                    println("✅ AuthViewModel: Estado cambiado a Authenticated")
+                }
+                .onFailure { error ->
+                    println("❌ AuthViewModel: Registro falló - ${error.message}")
                     _authState.value = AuthState.Error(error.toUserMessage())
                     println("❌ AuthViewModel: Estado cambiado a Error")
                 }

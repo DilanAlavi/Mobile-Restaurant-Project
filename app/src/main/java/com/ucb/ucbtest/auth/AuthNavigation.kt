@@ -27,5 +27,13 @@ fun AuthNavigation(
                 viewModel = authViewModel // ✅ Pasar el mismo ViewModel
             )
         }
+
+        composable("register_screen") {
+            RegisterScreen(
+                navController = navController,
+                onRegisterSuccess = onAuthSuccess,
+                viewModel = authViewModel // ✅ Pasar el mismo ViewModel
+            )
+        }
     }
 }

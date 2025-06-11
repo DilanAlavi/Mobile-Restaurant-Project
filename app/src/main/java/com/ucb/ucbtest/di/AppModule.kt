@@ -40,10 +40,14 @@ import com.ucb.usecases.cart.ClearCartUseCase
 
 import com.ucb.data.repository.AuthRepository
 import com.ucb.framework.repository.AuthRepositoryImpl
+import com.ucb.usecases.auth.RegisterWithEmailPasswordUseCase
 import com.ucb.usecases.auth.CheckAuthStateUseCase
 import com.ucb.usecases.auth.GetCurrentUserUseCase
 import com.ucb.usecases.auth.SignInWithGoogleUseCase
+import com.ucb.usecases.auth.SignInWithEmailPasswordUseCase
 import com.ucb.usecases.auth.SignOutUseCase
+import com.ucb.framework.auth.FakeUserManager
+import com.google.gson.Gson
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -196,8 +200,23 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideAuthRepository(firebaseAuth: FirebaseAuth): AuthRepository {
-        return AuthRepositoryImpl(firebaseAuth)
+    fun provideAuthRepository(
+        firebaseAuth: FirebaseAuth,
+        fakeUserManager: FakeUserManager
+    ): AuthRepository {
+        return AuthRepositoryImpl(firebaseAuth, fakeUserManager)
+    }
+
+    @Provides
+    @Singleton
+    fun provideSignInWithEmailPasswordUseCase(authRepository: AuthRepository): SignInWithEmailPasswordUseCase {
+        return SignInWithEmailPasswordUseCase(authRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideRegisterWithEmailPasswordUseCase(authRepository: AuthRepository): RegisterWithEmailPasswordUseCase {
+        return RegisterWithEmailPasswordUseCase(authRepository)
     }
 
     @Provides
@@ -222,5 +241,17 @@ object AppModule {
     @Singleton
     fun provideCheckAuthStateUseCase(authRepository: AuthRepository): CheckAuthStateUseCase {
         return CheckAuthStateUseCase(authRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideGson(): Gson {
+        return Gson()
+    }
+
+    @Provides
+    @Singleton
+    fun provideFakeUserManager(@ApplicationContext context: Context, gson: Gson): FakeUserManager {
+        return FakeUserManager(context, gson)
     }
 }

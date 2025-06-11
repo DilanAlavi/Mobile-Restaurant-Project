@@ -60,7 +60,7 @@ dependencies {
     testImplementation(libs.room.testing)
 
     implementation(libs.datastore)
-
+    implementation("androidx.datastore:datastore-preferences:1.0.0")
 
     debugImplementation(libs.chucker)
     releaseImplementation(libs.chucker.no.op)
