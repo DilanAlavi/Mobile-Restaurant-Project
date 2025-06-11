@@ -1,5 +1,6 @@
 package com.ucb.ucbtest.meal
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
@@ -23,6 +24,8 @@ import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.ucb.domain.Meal
 import com.ucb.ucbtest.cart.CartViewModel
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.delay
 
 @Composable
 fun MealDetailScreen(
@@ -33,6 +36,7 @@ fun MealDetailScreen(
     val red = Color(0xFFC71818)
     val darkRed = Color(0xFFA01111)
     val context = LocalContext.current
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -132,7 +136,9 @@ fun MealDetailScreen(
             Button(
                 onClick = {
                     cartViewModel.addToCart(meal, context)
-                    navController.navigate("cart")
+                    Toast.makeText(context, "'${meal.strMeal}' fue añadido al carrito", Toast.LENGTH_SHORT).show()
+                        navController.navigate("cart")
+
                 },
                 modifier = Modifier.fillMaxWidth(),
                 colors = ButtonDefaults.buttonColors(containerColor = red),
