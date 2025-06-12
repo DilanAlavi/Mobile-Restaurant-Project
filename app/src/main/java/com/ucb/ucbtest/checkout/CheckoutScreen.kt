@@ -219,7 +219,7 @@ fun CheckoutScreen(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
-                        "🚚 Tu pedido está en camino",
+                        "🚚🚚 Tu pedido está en camino",
                         color = Color(0xFFC71818),
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Bold
