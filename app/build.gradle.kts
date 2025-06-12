@@ -67,9 +67,12 @@ dependencies {
     implementation(libs.kotlinx.coroutines.core) // Para Flow
     implementation(libs.coil)
     implementation(libs.hilt)
+    implementation("com.google.maps.android:maps-compose:2.11.4")
+    implementation("com.google.android.gms:play-services-maps:18.2.0")
     kapt(libs.hilt.compiler)
     androidTestImplementation(libs.hilt.test)
     kaptAndroidTest(libs.hilt.compiler)
+
 
     //serialization
     implementation(libs.kotlinx.serialization.json)

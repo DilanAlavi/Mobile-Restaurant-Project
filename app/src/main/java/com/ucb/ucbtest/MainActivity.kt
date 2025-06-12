@@ -1,11 +1,20 @@
 package com.ucb.ucbtest
 
+import android.content.Context
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.material3.Scaffold
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.rememberNavController
@@ -32,52 +41,49 @@ class MainActivity : ComponentActivity() {
 fun MainApp(
     authViewModel: AuthViewModel = hiltViewModel()
 ) {
+    val context = LocalContext.current
+    val isConnected = remember { mutableStateOf(isInternetAvailable(context)) }
+
+    if (!isConnected.value) {
+        NoInternetScreen(onRetry = {
+            isConnected.value = isInternetAvailable(context)
+        })
+        return
+    }
+
     val authState by authViewModel.authState.collectAsStateWithLifecycle()
     val authNavController = rememberNavController()
     val mainNavController = rememberNavController()
 
-    // ✅ Manejar cambios de estado de autenticación
     LaunchedEffect(authState) {
-        val currentState = authState
-        println("🏠 MainActivity: Estado cambió a: $currentState")
-
-        when (currentState) {
+        when (authState) {
             is AuthState.Authenticated -> {
-                println("🎉 MainActivity: ¡USUARIO AUTENTICADO! ${currentState.user.name}")
+                println("🎉 Usuario autenticado")
             }
             is AuthState.Unauthenticated -> {
-                println("🚪 MainActivity: Usuario desautenticado - Limpiando navegación")
-                // Limpiar el stack de navegación principal y redirigir a splash
                 authNavController.navigate("splash_screen") {
-                    // Limpiar todo el stack de navegación
                     popUpTo(0) { inclusive = true }
                     launchSingleTop = true
                 }
             }
-            else -> println("🏠 MainActivity: Estado: $currentState")
+            else -> {}
         }
     }
-
-    // ✅ LOG DE VERIFICACIÓN DE INSTANCIA
-    println("🔍 MainActivity: AuthViewModel instance: ${authViewModel.hashCode()}")
 
     when (authState) {
         is AuthState.Loading,
         is AuthState.Unauthenticated,
         is AuthState.Error -> {
-            println("🔄 MainActivity: Mostrando AuthNavigation")
             AuthNavigation(
                 navController = authNavController,
                 onAuthSuccess = {
-                    // Opcional: Lógica adicional cuando se autentica exitosamente
-                    println("✅ MainActivity: Login exitoso")
+                    println("✅ Login exitoso")
                 },
-                authViewModel = authViewModel // ✅ Pasar la misma instancia
+                authViewModel = authViewModel
             )
         }
 
         is AuthState.Authenticated -> {
-            println("🎯 MainActivity: ¡MOSTRANDO APP PRINCIPAL!")
             Scaffold(
                 bottomBar = { BottomBar(mainNavController) }
             ) { innerPadding ->
@@ -88,4 +94,36 @@ fun MainApp(
             }
         }
     }
+}
+
+@Composable
+fun NoInternetScreen(onRetry: () -> Unit) {
+    val brown = Color(0xFF8B4513)
+
+    Surface(modifier = Modifier.fillMaxSize()) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(24.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(text = "Sin conexión a Internet")
+            Spacer(modifier = Modifier.height(16.dp))
+            Button(
+                onClick = onRetry,
+                colors = ButtonDefaults.buttonColors(containerColor = brown)
+            ) {
+                Text(text = "Reintentar", color = Color.White)
+            }
+        }
+    }
+}
+
+fun isInternetAvailable(context: Context): Boolean {
+    val connectivityManager =
+        context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+    val activeNetwork = connectivityManager.activeNetwork ?: return false
+    val capabilities = connectivityManager.getNetworkCapabilities(activeNetwork) ?: return false
+    return capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
 }
