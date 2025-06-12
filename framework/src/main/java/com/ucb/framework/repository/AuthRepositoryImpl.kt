@@ -9,7 +9,7 @@ import com.google.gson.Gson
 import com.ucb.data.repository.AuthRepository
 import com.ucb.domain.AuthError
 import com.ucb.domain.User
-import com.ucb.framework.auth.FakeUserManager
+import com.ucb.framework.auth.InternalUserManager
 import com.ucb.framework.mappers.toAuthError
 import com.ucb.framework.mappers.toUser
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -19,15 +19,15 @@ import javax.inject.Singleton
 
 class AuthRepositoryImpl(
     private val firebaseAuth: FirebaseAuth,
-    private val fakeUserManager: FakeUserManager,
+    private val internalUserManager: InternalUserManager, // ✅ CAMBIO DE NOMBRE
     @ApplicationContext private val context: Context,
     private val gson: Gson
 ) : AuthRepository {
 
     private val sessionPrefs: SharedPreferences =
-        context.getSharedPreferences("fake_user_session", Context.MODE_PRIVATE)
+        context.getSharedPreferences("user_session", Context.MODE_PRIVATE) // ✅ NOMBRE MÁS PROFESIONAL
 
-    private val currentFakeUserKey = "current_fake_user"
+    private val currentLocalUserKey = "current_local_user" // ✅ CAMBIO DE NOMBRE
 
     override suspend fun signInWithGoogle(idToken: String): Result<User> {
         return try {
@@ -57,22 +57,23 @@ class AuthRepositoryImpl(
         return try {
             println("🔥 AuthRepositoryImpl: Intentando login con email/password: $email")
 
-            val fakeUser = fakeUserManager.authenticate(email, password)
-            if (fakeUser != null) {
-                saveFakeUserSession(fakeUser)
+            // ✅ VERIFICAR USUARIOS INTERNOS PRIMERO
+            val localUser = internalUserManager.authenticate(email, password)
+            if (localUser != null) {
+                saveLocalUserSession(localUser)
 
-                println("✅ AuthRepositoryImpl: Login fake exitoso para ${fakeUser.name}")
-                return Result.success(fakeUser)
+                println("✅ AuthRepositoryImpl: Login interno exitoso para ${localUser.name}")
+                return Result.success(localUser)
             }
 
-            println("🔥 AuthRepositoryImpl: No es usuario fake, intentando con Firebase")
+            println("🔥 AuthRepositoryImpl: No es usuario interno, intentando con Firebase")
             val result = firebaseAuth.signInWithEmailAndPassword(email, password).await()
             val firebaseUser = result.user
 
             if (firebaseUser != null) {
                 val user = firebaseUser.toUser()
 
-                clearFakeUserSession()
+                clearLocalUserSession()
 
                 println("✅ AuthRepositoryImpl: Login Firebase exitoso - User: ${user.name} (${user.email})")
                 Result.success(user)
@@ -101,29 +102,29 @@ class AuthRepositoryImpl(
                 return Result.failure(AuthError.InvalidCredentials)
             }
 
-            val existingFakeUsers = fakeUserManager.getAllUsers()
-            if (existingFakeUsers.containsKey(email.lowercase())) {
-                println("❌ AuthRepositoryImpl: Usuario fake ya existe: $email")
+            val existingLocalUsers = internalUserManager.getAllUsers()
+            if (existingLocalUsers.containsKey(email.lowercase())) {
+                println("❌ AuthRepositoryImpl: Usuario interno ya existe: $email")
                 return Result.failure(AuthError.AccountExistsWithDifferentCredential)
             }
 
             val newUser = User(
-                id = "fake_${System.currentTimeMillis()}",
+                id = "local_${System.currentTimeMillis()}", // ✅ CAMBIO DE PREFIJO
                 name = name.trim(),
                 email = email.lowercase(),
                 photoUrl = "https://i.pravatar.cc/150?img=${(1..50).random()}", // Avatar aleatorio
                 isEmailVerified = true
             )
 
-            val success = fakeUserManager.addUser(email.lowercase(), password, newUser)
+            val success = internalUserManager.addUser(email.lowercase(), password, newUser)
 
             if (success) {
-                saveFakeUserSession(newUser)
+                saveLocalUserSession(newUser)
 
-                println("✅ AuthRepositoryImpl: Usuario fake registrado exitosamente: ${newUser.name} (${email})")
+                println("✅ AuthRepositoryImpl: Usuario interno registrado exitosamente: ${newUser.name} (${email})")
                 Result.success(newUser)
             } else {
-                println("❌ AuthRepositoryImpl: Error al agregar usuario fake")
+                println("❌ AuthRepositoryImpl: Error al agregar usuario interno")
                 Result.failure(AuthError.Unknown("Error al registrar usuario"))
             }
 
@@ -136,7 +137,7 @@ class AuthRepositoryImpl(
     override suspend fun signOut(): Result<Unit> {
         return try {
             firebaseAuth.signOut()
-            clearFakeUserSession()
+            clearLocalUserSession()
 
             println("✅ AuthRepositoryImpl: SignOut exitoso - todas las sesiones limpiadas")
             Result.success(Unit)
@@ -148,14 +149,14 @@ class AuthRepositoryImpl(
 
     override suspend fun getCurrentUser(): User? {
         return try {
-            // 1. Primero revisar sesión fake
-            val fakeUser = getCurrentFakeUser()
-            if (fakeUser != null) {
-                println("🔍 AuthRepositoryImpl: getCurrentUser - Usuario fake encontrado: ${fakeUser.email}")
-                return fakeUser
+            // 1. Primero revisar sesión local
+            val localUser = getCurrentLocalUser()
+            if (localUser != null) {
+                println("🔍 AuthRepositoryImpl: getCurrentUser - Usuario local encontrado: ${localUser.email}")
+                return localUser
             }
 
-            // 2. Si no hay fake, revisar Firebase
+            // 2. Si no hay local, revisar Firebase
             val firebaseUser = firebaseAuth.currentUser?.toUser()
             if (firebaseUser != null) {
                 println("🔍 AuthRepositoryImpl: getCurrentUser - Usuario Firebase encontrado: ${firebaseUser.email}")
@@ -181,60 +182,62 @@ class AuthRepositoryImpl(
         }
     }
 
-    private fun saveFakeUserSession(user: User) {
+    // ✅ MÉTODOS PARA MANEJO DE SESIÓN LOCAL
+    private fun saveLocalUserSession(user: User) {
         try {
             val userJson = gson.toJson(user)
-            sessionPrefs.edit().putString(currentFakeUserKey, userJson).apply()
-            println("✅ AuthRepositoryImpl: Sesión fake guardada para ${user.email}")
+            sessionPrefs.edit().putString(currentLocalUserKey, userJson).apply()
+            println("✅ AuthRepositoryImpl: Sesión local guardada para ${user.email}")
         } catch (e: Exception) {
-            println("❌ AuthRepositoryImpl: Error guardando sesión fake - ${e.message}")
+            println("❌ AuthRepositoryImpl: Error guardando sesión local - ${e.message}")
         }
     }
 
-    private fun getCurrentFakeUser(): User? {
+    private fun getCurrentLocalUser(): User? {
         return try {
-            val userJson = sessionPrefs.getString(currentFakeUserKey, null)
+            val userJson = sessionPrefs.getString(currentLocalUserKey, null)
             if (userJson != null) {
                 gson.fromJson(userJson, User::class.java)
             } else {
                 null
             }
         } catch (e: Exception) {
-            println("❌ AuthRepositoryImpl: Error obteniendo usuario fake actual - ${e.message}")
+            println("❌ AuthRepositoryImpl: Error obteniendo usuario local actual - ${e.message}")
             null
         }
     }
 
-    private fun clearFakeUserSession() {
+    private fun clearLocalUserSession() {
         try {
-            sessionPrefs.edit().remove(currentFakeUserKey).apply()
-            println("✅ AuthRepositoryImpl: Sesión fake limpiada")
+            sessionPrefs.edit().remove(currentLocalUserKey).apply()
+            println("✅ AuthRepositoryImpl: Sesión local limpiada")
         } catch (e: Exception) {
-            println("❌ AuthRepositoryImpl: Error limpiando sesión fake - ${e.message}")
+            println("❌ AuthRepositoryImpl: Error limpiando sesión local - ${e.message}")
         }
     }
 
-    suspend fun addFakeUser(email: String, password: String, user: User): Boolean {
-        return fakeUserManager.addUser(email, password, user)
+    // ✅ MÉTODOS PARA GESTIÓN DE USUARIOS INTERNOS
+    suspend fun addInternalUser(email: String, password: String, user: User): Boolean {
+        return internalUserManager.addUser(email, password, user)
     }
 
-    suspend fun updateFakeUser(email: String, newPassword: String? = null, newUser: User? = null): Boolean {
-        return fakeUserManager.updateUser(email, newPassword, newUser)
+    suspend fun updateInternalUser(email: String, newPassword: String? = null, newUser: User? = null): Boolean {
+        return internalUserManager.updateUser(email, newPassword, newUser)
     }
 
-    suspend fun deleteFakeUser(email: String): Boolean {
-        return fakeUserManager.deleteUser(email)
+    suspend fun deleteInternalUser(email: String): Boolean {
+        return internalUserManager.deleteUser(email)
     }
 
-    suspend fun getAllFakeUsers(): Map<String, Pair<String, User>> {
-        return fakeUserManager.getAllUsers()
+    suspend fun getAllInternalUsers(): Map<String, Pair<String, User>> {
+        return internalUserManager.getAllUsers()
     }
 
-    suspend fun resetFakeUsers() {
-        fakeUserManager.resetToDefaults()
+    suspend fun resetInternalUsers() {
+        internalUserManager.resetToDefaults()
     }
 
-    suspend fun changeFakeUserPassword(email: String, oldPassword: String, newPassword: String): Boolean {
-        return fakeUserManager.changePassword(email, oldPassword, newPassword)
+    suspend fun changeInternalUserPassword(email: String, oldPassword: String, newPassword: String): Boolean {
+        return internalUserManager.changePassword(email, oldPassword, newPassword)
     }
 }

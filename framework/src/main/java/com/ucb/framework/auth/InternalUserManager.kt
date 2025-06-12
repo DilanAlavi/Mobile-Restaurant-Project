@@ -15,41 +15,41 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 // ✅ EXTENSIÓN PARA CREAR DATASTORE
-private val Context.userDataStore: DataStore<Preferences> by preferencesDataStore(name = "fake_users")
+private val Context.userDataStore: DataStore<Preferences> by preferencesDataStore(name = "internal_users")
 
-// ✅ CLASE DE DATOS SIMPLE PARA GSON (EN LUGAR DE PAIR)
-data class FakeUserEntry(
+// ✅ CLASE DE DATOS SIMPLE PARA GSON
+data class InternalUserEntry(
     val password: String,
     val user: User
 )
 
 @Singleton
-class FakeUserManager @Inject constructor(
+class InternalUserManager @Inject constructor(
     private val context: Context,
     private val gson: Gson = Gson()
 ) {
 
-    private val USERS_KEY = stringPreferencesKey("fake_users")
+    private val USERS_KEY = stringPreferencesKey("internal_users")
 
-    // ✅ USUARIOS POR DEFECTO (NUEVA ESTRUCTURA)
+    // ✅ USUARIOS POR DEFECTO DEL SISTEMA
     private val defaultUsers = mapOf(
-        "admin@ucb.edu.bo" to FakeUserEntry("admin123", User("admin_001", "Administrador UCB", "admin@ucb.edu.bo", "https://i.pravatar.cc/150?img=1", true)),
-        "student@ucb.edu.bo" to FakeUserEntry("student123", User("student_001", "Estudiante UCB", "student@ucb.edu.bo", "https://i.pravatar.cc/150?img=2", true)),
-        "teacher@ucb.edu.bo" to FakeUserEntry("teacher123", User("teacher_001", "Docente UCB", "teacher@ucb.edu.bo", "https://i.pravatar.cc/150?img=3", true)),
-        "guest@ucb.edu.bo" to FakeUserEntry("guest123", User("guest_001", "Invitado UCB", "guest@ucb.edu.bo", "https://i.pravatar.cc/150?img=4", false)),
-        "test@ucb.edu.bo" to FakeUserEntry("test123", User("test_001", "Usuario Test", "test@ucb.edu.bo", "https://i.pravatar.cc/150?img=5", true))
+        "admin@ucb.edu.bo" to InternalUserEntry("admin123", User("admin_001", "Administrador UCB", "admin@ucb.edu.bo", "https://i.pravatar.cc/150?img=1", true)),
+        "student@ucb.edu.bo" to InternalUserEntry("student123", User("student_001", "Estudiante UCB", "student@ucb.edu.bo", "https://i.pravatar.cc/150?img=2", true)),
+        "teacher@ucb.edu.bo" to InternalUserEntry("teacher123", User("teacher_001", "Docente UCB", "teacher@ucb.edu.bo", "https://i.pravatar.cc/150?img=3", true)),
+        "guest@ucb.edu.bo" to InternalUserEntry("guest123", User("guest_001", "Invitado UCB", "guest@ucb.edu.bo", "https://i.pravatar.cc/150?img=4", false)),
+        "test@ucb.edu.bo" to InternalUserEntry("test123", User("test_001", "Usuario Test", "test@ucb.edu.bo", "https://i.pravatar.cc/150?img=5", true))
     )
 
-    // ✅ OBTENER TODOS LOS USUARIOS (NUEVA ESTRUCTURA)
+    // ✅ OBTENER TODOS LOS USUARIOS
     suspend fun getAllUsers(): Map<String, Pair<String, User>> {
         return try {
             context.userDataStore.data.map { preferences ->
                 val usersJson = preferences[USERS_KEY]
                 if (usersJson != null) {
                     try {
-                        // ✅ DESERIALIZAR ESTRUCTURA SIMPLE
-                        val type = object : TypeToken<Map<String, FakeUserEntry>>() {}.type
-                        val userEntries: Map<String, FakeUserEntry> = gson.fromJson(usersJson, type) ?: emptyMap()
+                        // ✅ DESERIALIZAR ESTRUCTURA
+                        val type = object : TypeToken<Map<String, InternalUserEntry>>() {}.type
+                        val userEntries: Map<String, InternalUserEntry> = gson.fromJson(usersJson, type) ?: emptyMap()
 
                         // ✅ CONVERTIR A FORMATO LEGACY PARA COMPATIBILIDAD
                         userEntries.mapValues { (_, entry) ->
@@ -93,8 +93,8 @@ class FakeUserManager @Inject constructor(
         }
     }
 
-    // ✅ GUARDAR USUARIOS (NUEVA ESTRUCTURA)
-    private suspend fun saveUsers(users: Map<String, FakeUserEntry>) {
+    // ✅ GUARDAR USUARIOS
+    private suspend fun saveUsers(users: Map<String, InternalUserEntry>) {
         try {
             val usersJson = gson.toJson(users)
             context.userDataStore.edit { preferences ->
@@ -113,10 +113,10 @@ class FakeUserManager @Inject constructor(
             val userEntry = users[email.lowercase()]
 
             if (userEntry != null && userEntry.first == password) {
-                println("✅ Login fake exitoso: ${userEntry.second.name}")
+                println("✅ Login interno exitoso: ${userEntry.second.name}")
                 userEntry.second
             } else {
-                println("❌ Credenciales fake incorrectas para: $email")
+                println("❌ Credenciales internas incorrectas para: $email")
                 null
             }
         } catch (e: Exception) {
@@ -133,10 +133,10 @@ class FakeUserManager @Inject constructor(
             if (!currentUsers.containsKey(email.lowercase())) {
                 // Convertir a nueva estructura para guardar
                 val newUsersStructure = currentUsers.mapValues { (_, pair) ->
-                    FakeUserEntry(pair.first, pair.second)
+                    InternalUserEntry(pair.first, pair.second)
                 }.toMutableMap()
 
-                newUsersStructure[email.lowercase()] = FakeUserEntry(password, user)
+                newUsersStructure[email.lowercase()] = InternalUserEntry(password, user)
                 saveUsers(newUsersStructure)
                 println("✅ Usuario agregado: ${user.name} (${email})")
                 true
@@ -162,10 +162,10 @@ class FakeUserManager @Inject constructor(
 
                 // Convertir a nueva estructura para guardar
                 val newUsersStructure = currentUsers.mapValues { (_, pair) ->
-                    FakeUserEntry(pair.first, pair.second)
+                    InternalUserEntry(pair.first, pair.second)
                 }.toMutableMap()
 
-                newUsersStructure[email.lowercase()] = FakeUserEntry(updatedPassword, updatedUser)
+                newUsersStructure[email.lowercase()] = InternalUserEntry(updatedPassword, updatedUser)
                 saveUsers(newUsersStructure)
                 println("✅ Usuario actualizado: ${updatedUser.name} (${email})")
                 true
@@ -189,7 +189,7 @@ class FakeUserManager @Inject constructor(
 
                 // Convertir a nueva estructura para guardar
                 val newUsersStructure = currentUsers.mapValues { (_, pair) ->
-                    FakeUserEntry(pair.first, pair.second)
+                    InternalUserEntry(pair.first, pair.second)
                 }
 
                 saveUsers(newUsersStructure)
@@ -235,10 +235,10 @@ class FakeUserManager @Inject constructor(
             if (userEntry != null && userEntry.first == oldPassword) {
                 // Convertir a nueva estructura para guardar
                 val newUsersStructure = currentUsers.mapValues { (_, pair) ->
-                    FakeUserEntry(pair.first, pair.second)
+                    InternalUserEntry(pair.first, pair.second)
                 }.toMutableMap()
 
-                newUsersStructure[email.lowercase()] = FakeUserEntry(newPassword, userEntry.second)
+                newUsersStructure[email.lowercase()] = InternalUserEntry(newPassword, userEntry.second)
                 saveUsers(newUsersStructure)
                 println("✅ Contraseña cambiada para: $email")
                 true

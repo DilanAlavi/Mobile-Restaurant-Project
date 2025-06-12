@@ -16,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -26,18 +27,45 @@ import androidx.navigation.NavController
 import com.ucb.domain.User
 import com.ucb.ucbtest.auth.AuthState
 import com.ucb.ucbtest.auth.AuthViewModel
+import com.ucb.ucbtest.settings.SettingsViewModel
+import android.content.Intent
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileScreen(
     navController: NavController,
-    authViewModel: AuthViewModel = hiltViewModel()
+    authViewModel: AuthViewModel = hiltViewModel(),
+    settingsViewModel: SettingsViewModel = hiltViewModel() // ✅ AGREGAR SETTINGSVIEWMODEL PARA LOGOUT
 ) {
     val red = Color(0xFFC71818)
     val darkRed = Color(0xFFA01111)
     val lightGray = Color(0xFFF5F5F5)
 
     val authState by authViewModel.authState.collectAsStateWithLifecycle()
+
+    // ✅ ESTADOS PARA MANEJAR LOGOUT DESDE SETTINGS VIEWMODEL
+    val isLoggingOut by settingsViewModel.isLoggingOut.collectAsStateWithLifecycle()
+    val shouldRestartApp by settingsViewModel.shouldRestartApp.collectAsStateWithLifecycle()
+    val context = LocalContext.current
+
+    // ✅ MANEJAR REINICIO DE APP DESPUÉS DEL LOGOUT
+    LaunchedEffect(shouldRestartApp) {
+        if (shouldRestartApp) {
+            println("🔄 ProfileScreen: Reiniciando app después del logout...")
+
+            // Reiniciar la Activity principal
+            val intent = context.packageManager.getLaunchIntentForPackage(context.packageName)
+            intent?.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
+            context.startActivity(intent)
+
+            // Terminar la actividad actual
+            if (context is android.app.Activity) {
+                context.finish()
+            }
+
+            settingsViewModel.onRestartHandled()
+        }
+    }
 
     // Obtener usuario actual
     val currentUser = when (val state = authState) {
@@ -81,9 +109,10 @@ fun ProfileScreen(
                 // Opciones del perfil
                 ProfileOptionsCard(
                     navController = navController,
-                    authViewModel = authViewModel,
+                    settingsViewModel = settingsViewModel, // ✅ PASAR SETTINGSVIEWMODEL
                     red = red,
-                    darkRed = darkRed
+                    darkRed = darkRed,
+                    isLoggingOut = isLoggingOut // ✅ PASAR ESTADO DE LOADING
                 )
 
                 Spacer(modifier = Modifier.height(24.dp))
@@ -207,9 +236,10 @@ fun UserInfoCard(
 @Composable
 fun ProfileOptionsCard(
     navController: NavController,
-    authViewModel: AuthViewModel,
+    settingsViewModel: SettingsViewModel, // ✅ CAMBIAR A SETTINGSVIEWMODEL
     red: Color,
-    darkRed: Color
+    darkRed: Color,
+    isLoggingOut: Boolean // ✅ AGREGAR ESTADO DE LOADING
 ) {
     Card(
         modifier = Modifier
@@ -250,13 +280,19 @@ fun ProfileOptionsCard(
 
             Divider(modifier = Modifier.padding(vertical = 8.dp))
 
-            ProfileOption(
+            // ✅ SIGNOUT CON ESTADO DE LOADING MEJORADO
+            ProfileOptionWithLoading(
                 icon = Icons.Filled.ExitToApp,
-                title = "Cerrar Sesión",
+                title = if (isLoggingOut) "Cerrando sesión..." else "Cerrar Sesión",
                 subtitle = "Salir de mi cuenta",
-                onClick = { authViewModel.signOut() },
+                onClick = {
+                    println("🔘 ProfileScreen: Botón logout presionado")
+                    settingsViewModel.signOut() // ✅ USAR SETTINGSVIEWMODEL
+                },
                 red = Color.Red,
-                isDestructive = true
+                isDestructive = true,
+                isLoading = isLoggingOut,
+                enabled = !isLoggingOut
             )
         }
     }
@@ -366,6 +402,76 @@ fun ProfileOption(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun ProfileOptionWithLoading(
+    icon: ImageVector,
+    title: String,
+    subtitle: String,
+    onClick: () -> Unit,
+    red: Color,
+    isDestructive: Boolean = false,
+    isLoading: Boolean = false,
+    enabled: Boolean = true
+) {
+    Card(
+        onClick = { if (enabled) onClick() },
+        colors = CardDefaults.cardColors(
+            containerColor = Color.Transparent
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(12.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            if (isLoading) {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(24.dp),
+                    strokeWidth = 2.dp,
+                    color = Color.Red
+                )
+            } else {
+                Icon(
+                    imageVector = icon,
+                    contentDescription = title,
+                    tint = if (isDestructive) Color.Red else red,
+                    modifier = Modifier.size(24.dp)
+                )
+            }
+
+            Spacer(modifier = Modifier.width(16.dp))
+
+            Column(
+                modifier = Modifier.weight(1f)
+            ) {
+                Text(
+                    text = title,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Medium,
+                    color = if (isDestructive) (if (enabled) Color.Red else Color.Gray) else Color.Black
+                )
+                Text(
+                    text = subtitle,
+                    fontSize = 14.sp,
+                    color = Color.Gray
+                )
+            }
+
+            if (!isLoading) {
+                Icon(
+                    imageVector = Icons.Filled.ArrowForward,
+                    contentDescription = "Ir",
+                    tint = Color.Gray,
+                    modifier = Modifier.size(20.dp)
+                )
+            }
+        }
+    }
+}
+
 @Composable
 fun InfoRow(
     label: String,
@@ -402,5 +508,3 @@ fun InfoRow(
         }
     }
 }
-
-// Funciones auxiliares simplificadas (UserType y timestamp no disponibles en tu User actual)

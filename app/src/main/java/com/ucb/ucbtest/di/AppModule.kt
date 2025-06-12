@@ -46,7 +46,7 @@ import com.ucb.usecases.auth.GetCurrentUserUseCase
 import com.ucb.usecases.auth.SignInWithGoogleUseCase
 import com.ucb.usecases.auth.SignInWithEmailPasswordUseCase
 import com.ucb.usecases.auth.SignOutUseCase
-import com.ucb.framework.auth.FakeUserManager
+import com.ucb.framework.auth.InternalUserManager // ✅ CAMBIO DE IMPORT
 import com.google.gson.Gson
 
 @Module
@@ -198,15 +198,16 @@ object AppModule {
         return FirebaseAuth.getInstance()
     }
 
+    // ✅ PROVIDER ACTUALIZADO PARA AUTHREPOSITORY
     @Provides
     @Singleton
     fun provideAuthRepository(
         firebaseAuth: FirebaseAuth,
-        fakeUserManager: FakeUserManager,
+        internalUserManager: InternalUserManager, // ✅ CAMBIO DE NOMBRE
         @ApplicationContext context: Context,
         gson: Gson
     ): AuthRepository {
-        return AuthRepositoryImpl(firebaseAuth, fakeUserManager, context, gson)
+        return AuthRepositoryImpl(firebaseAuth, internalUserManager, context, gson)
     }
 
     @Provides
@@ -253,7 +254,7 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideFakeUserManager(@ApplicationContext context: Context, gson: Gson): FakeUserManager {
-        return FakeUserManager(context, gson)
+    fun provideInternalUserManager(@ApplicationContext context: Context, gson: Gson): InternalUserManager {
+        return InternalUserManager(context, gson)
     }
 }

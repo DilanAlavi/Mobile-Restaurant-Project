@@ -81,6 +81,7 @@ fun SettingsScreen(
                         .padding(vertical = 12.dp)
                         .clickable {
                             when (item) {
+                                "Mi cuenta" -> navController.navigate("profile") // ✅ NAVEGACIÓN A PERFIL
                                 "Mis pedidos" -> navController.navigate("orders_history")
                                 else -> onItemSelected(item)
                             }
@@ -123,7 +124,6 @@ fun SettingsScreen(
                     horizontalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     Icon(
-
                         contentDescription = "Cerrar sesión",
                         imageVector = Icons.Default.ExitToApp,
                         tint = Color.Red,
@@ -148,6 +148,5 @@ fun SettingsScreen(
                 }
             }
         }
-
     }
 }
