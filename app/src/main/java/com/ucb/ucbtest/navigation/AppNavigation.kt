@@ -63,7 +63,6 @@ fun AppNavigation(
                 }
             )
         }
-
         composable(
             route = "category_products/{categoryName}",
             arguments = listOf(navArgument("categoryName") { type = NavType.StringType })

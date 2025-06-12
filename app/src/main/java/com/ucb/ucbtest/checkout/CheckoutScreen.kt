@@ -206,8 +206,7 @@ fun CheckoutScreen(
             }
         }
     }
-
-    // Dialog de éxito con imagen
+    
     if (showSuccessDialog) {
         Dialog(onDismissRequest = { }) {
             Card(
@@ -227,16 +226,7 @@ fun CheckoutScreen(
 
                     Spacer(modifier = Modifier.height(16.dp))
 
-                    // Imagen tipo mapa
-                    Image(
-                        painter = painterResource(id = R.drawable.map_placeholder),
-                        contentDescription = "Mapa de ejemplo",
-                        contentScale = ContentScale.Crop,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(150.dp)
-                            .clip(RoundedCornerShape(12.dp))
-                    )
+                    RandomMapImageOnce()
 
                     Spacer(modifier = Modifier.height(24.dp))
 
@@ -263,4 +253,26 @@ fun CheckoutScreen(
             }
         }
     }
+}
+
+@Composable
+fun RandomMapImageOnce() {
+    val imageList = listOf(
+        R.drawable.map1,
+        R.drawable.map2,
+        R.drawable.map3,
+        R.drawable.map4
+    )
+
+    val randomImage = remember { imageList.random() }
+
+    Image(
+        painter = painterResource(id = randomImage),
+        contentDescription = "Ubicación aleatoria",
+        contentScale = ContentScale.Crop,
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(150.dp)
+            .clip(RoundedCornerShape(12.dp))
+    )
 }
