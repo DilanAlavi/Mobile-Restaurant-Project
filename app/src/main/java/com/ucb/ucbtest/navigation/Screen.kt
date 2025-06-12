@@ -9,6 +9,7 @@ sealed class Screen(val route: String) {
     object CartScreen : Screen("cart")
     object CheckoutScreen : Screen("checkout") // AGREGAR
     object OrdersHistoryScreen : Screen("orders_history") // AGREGAR
+    object ProfileScreen : Screen("profile")
     object CategoryProductsScreen : Screen("category_products/{categoryName}") {
         fun createRoute(categoryName: String) = "category_products/$categoryName"
     }

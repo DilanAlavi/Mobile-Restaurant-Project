@@ -22,6 +22,7 @@ import com.ucb.ucbtest.cart.CartScreen
 import com.ucb.ucbtest.checkout.CheckoutScreen
 import com.ucb.ucbtest.orders.OrdersHistoryScreen
 import com.ucb.ucbtest.categoryproducts.CategoryProductsScreen
+import com.ucb.ucbtest.profile.ProfileScreen
 
 @Composable
 fun AppNavigation(
@@ -86,6 +87,9 @@ fun AppNavigation(
             val mealJson = backStackEntry.arguments?.getString("meal")
             val meal = Gson().fromJson(mealJson, Meal::class.java)
             MealDetailScreen(meal = meal, navController = navController) // AGREGAR navController
+        }
+        composable("profile") {
+            ProfileScreen(navController = navController)
         }
         composable("cart") {
             CartScreen(navController = navController)

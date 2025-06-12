@@ -202,9 +202,11 @@ object AppModule {
     @Singleton
     fun provideAuthRepository(
         firebaseAuth: FirebaseAuth,
-        fakeUserManager: FakeUserManager
+        fakeUserManager: FakeUserManager,
+        @ApplicationContext context: Context,
+        gson: Gson
     ): AuthRepository {
-        return AuthRepositoryImpl(firebaseAuth, fakeUserManager)
+        return AuthRepositoryImpl(firebaseAuth, fakeUserManager, context, gson)
     }
 
     @Provides
