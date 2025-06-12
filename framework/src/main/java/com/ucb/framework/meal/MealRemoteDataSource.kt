@@ -51,4 +51,23 @@ class MealRemoteDataSource(
             NetworkResult.Error(response.message())
         }
     }
+
+    override suspend fun getMealsByCategory(categoryName: String): NetworkResult<List<Meal>> {
+        return try {
+            val response = retrofitBuilder.mealApiService.getMealsByCategory(categoryName)
+            if (response.isSuccessful) {
+                val mealsDto = response.body()?.meals
+                if (!mealsDto.isNullOrEmpty()) {
+                    val meals = mealsDto.map { it.toModel() }
+                    NetworkResult.Success(meals)
+                } else {
+                    NetworkResult.Error("No se encontraron productos en esta categoría")
+                }
+            } else {
+                NetworkResult.Error("Error en la respuesta: ${response.message()}")
+            }
+        } catch (e: Exception) {
+            NetworkResult.Error("Error de conexión: ${e.message}")
+        }
+    }
 }

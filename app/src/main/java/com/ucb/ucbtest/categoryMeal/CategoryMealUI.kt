@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.ucb.domain.CategoryMeal
+import androidx.navigation.NavController
 
 /**
  * Componente reutilizable para mostrar una cuadrícula de categorías de comida.
@@ -27,6 +28,7 @@ import com.ucb.domain.CategoryMeal
  */
 @Composable
 fun CategoryMealComponent(
+    navController: NavController? = null, // ✅ AGREGAR este parámetro
     viewModel: CategoryMealViewModel = hiltViewModel(),
     onCategoryClick: (String) -> Unit = {},
     showTitle: Boolean = true,
@@ -67,19 +69,21 @@ fun CategoryMealComponent(
             is CategoryMealViewModel.CategoryMealState.Success -> {
                 val categories = currentState.categories
 
-                // IMPORTANTE: No hay Modifier.fillMaxSize() aquí para evitar restricciones de altura infinita
                 LazyVerticalGrid(
                     columns = GridCells.Fixed(columns),
                     contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
                     horizontalArrangement = Arrangement.spacedBy(16.dp),
                     verticalArrangement = Arrangement.spacedBy(16.dp),
-                    // No usar fillMaxWidth() aquí
-                    modifier = Modifier.heightIn(max = 800.dp) // Limitar altura máxima
+                    modifier = Modifier.heightIn(max = 800.dp)
                 ) {
                     items(categories) { category ->
                         CategoryCardSimple(
                             category = category,
-                            onClick = { onCategoryClick(category.strCategory) }
+                            onClick = {
+                                // ✅ CAMBIAR esta navegación:
+                                navController?.navigate("category_products/${category.strCategory}")
+                                    ?: onCategoryClick(category.strCategory)
+                            }
                         )
                     }
                 }

@@ -267,6 +267,7 @@ fun MealUI(
                         .height(240.dp)
                 ) {
                     CategoryMealComponent(
+                        navController = navController,
                         onCategoryClick = { categoryName -> },
                         showTitle = false,
                         columns = 2,

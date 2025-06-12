@@ -15,4 +15,7 @@ class MealRepository(
     suspend fun getMealById(id: String): NetworkResult<Meal> {
         return remoteDataSource.getMealById(id)
     }
+    suspend fun getMealsByCategory(categoryName: String): NetworkResult<List<Meal>> {
+        return remoteDataSource.getMealsByCategory(categoryName)
+    }
 }
